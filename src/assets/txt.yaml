@@ -1,0 +1,369 @@
+openapi: 3.0.3
+
+info:
+  title: 授权管理平台
+  description: "厦门安智达信息科技有限公司授权管理平台HTTP API文档(仅供内部使用)\r\n\r\n
+  # 流程标准参考文件:\r\n
+  - OpenID Connect Core 1.0 incorporating errata set 1\r\n
+  - RFC6749 The OAuth 2.0 Authorization Framework\r\n
+  - RFC7636 Proof Key for Code Exchange by OAuth Public Clients\r\n\r\n
+  (授权服务器的实现主要参照标准进行编码,PKCE部分略有不同)"
+  version: 1.0.0
+
+servers:
+- url: https://auth.meiyafly.com
+  description: 测试环境
+- url: https://auth.xmazd.com
+  description: 生产环境
+
+paths:
+  /{version}/oauth2/auth:
+    get:
+      summary: 开始登录流程
+      tags:
+        - 认证与授权
+      parameters:
+        - $ref: '#/components/parameters/version'
+        - name: client_id
+          in: query
+          description: >-
+            客户端ID（相对于授权服务器来说为客户端），由授权服务器提供
+          required: true
+          schema:
+            type: string
+        - name: redirect_uri
+          in: query
+          description: >-
+            重定向地址，认证成功后授权服务器将重定向客户端到指定地址
+          required: true
+          schema:
+            type: string
+        - name: response_type
+          in: query
+          description: >-
+            响应参数类型，认证成功后将对应类型参数值附加在重定向地址后面
+          required: true
+          schema:
+            type: string
+        - name: scope
+          in: query
+          description: >-
+            ID_token包含的内容范围
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          description: >-
+            Opaque value used to maintain state between the request and the callback. Typically, Cross-Site Request Forgery (CSRF, XSRF) mitigation is done by cryptographically binding the value of this parameter with a browser cookie.
+          required: true
+          schema:
+            type: string
+        - name: audience
+          in: query
+          description: >-
+            资源服务器的URI，由调用者指定，用于限制access token作用于指定资源服务器。空表示无限制。
+          schema:
+            type: string
+        - name: max_age
+          in: query
+          description: >-
+            Specifies the allowable elapsed time in seconds since the last time the End-User was actively authenticated by the OP. If the elapsed time is greater than this value, the OP MUST attempt to actively re-authenticate the End-User. When max_age is used, the ID Token returned MUST include an auth_time Claim Value.
+          schema:
+            type: string
+        - name: nonce
+          in: query
+          description: >-
+            nonce, a string value used to associate a Client session with an ID Token, and to mitigate replay attacks. The value is passed through unmodified from the Authentication Request to the ID Token. If present in the ID Token, Clients MUST verify that the nonce Claim Value is equal to the value of the nonce parameter sent in the Authentication Request. If present in the Authentication Request, Authorization Servers MUST include a nonce Claim in the ID Token with the Claim Value being the nonce value sent in the Authentication Request. Authorization Servers SHOULD perform no other processing on nonce values used. The nonce value is a case sensitive string
+          schema:
+            type: string
+        - name: prompt
+          in: query
+          description: >-
+            Space delimited, case sensitive list of ASCII string values that specifies whether the Authorization Server prompts the End-User for reauthentication and consent. The defined values are: none, login, consent, select_account
+          schema:
+            type: string
+        - name: login_verifier
+          in: query
+          description: >-
+            PKCE的参数, 在RFC7636标准规范中是由客户端生成，这里不依照标准，由授权服务器生成并附加在重定向
+          schema:
+            type: string
+        - name: consent_verifier
+          in: query
+          description: >-
+            PKCE的参数, 在RFC7636标准规范中是由客户端生成，这里不依照标准，由授权服务器自动生成
+          schema:
+            type: string
+      responses:
+        302:
+          description: 需要确认身份状态(无效身份或有效身份)或需要确认授权信息或发放授权码
+          headers:
+            Location:
+              description: 下一步
+              schema:
+                type: string
+                example: https://example.com/login?login_challenge=c136254985c44577befa61541a5f0273 或 https://example.com/consent?consent_challenge=c66f67be1aee48dc953d7d6970264d18 或 https://example.com/callback?code=bwfr6VbuHjxHF5_lRgY8_sq88QlJv108eaxx8bBAvAE.yDPRzbTS-OuB7ERpC4tTNgtIAPGjFEFa4sloyvPuUw4&scope=openid%20offline&state=wnygzwcmbsydbrdosherqxmg
+            Set-Cookie:
+              description: 防CSRF攻击(仅在需确认身份状态或需要确认授权信息的这两种响应中存在)
+              schema:
+                type: string
+                example: oauth2_authentication_csrf=MTU5MTc1NTIyOXxEdi1CQkFFQ180SUFBUkFCRUFBQVB2LUNBQUVHYzNSeWFXNW5EQVlBQkdOemNtWUdjM1J5YVc1bkRDSUFJR1psWW1Rd05qUTVNall4TURSaE5tSTRaVEJtTWpNNFpEVXhORFkzTVdRd3zxEWQosFUeONveo-BE7r90bxCU_mBbOpx599-DcgPs9Q==; Path=/; Expires=Fri, 10 Jul 2020 02:13:49 GMT; Max-Age=2592000; HttpOnly; SameSite=None 或 oauth2_authentication_csrf=MTU5MTc1NTIyOXxEdi1CQkFFQ180SUFBUkFCRUFBQVB2LUNBQUVHYzNSeWFXNW5EQVlBQkdOemNtWUdjM1J5YVc1bkRDSUFJR1psWW1Rd05qUTVNall4TURSaE5tSTRaVEJtTWpNNFpEVXhORFkzTVdRd3zxEWQosFUeONveo-BE7r90bxCU_mBbOpx599-DcgPs9Q==; Path=/; Expires=Fri, 10 Jul 2020 02:13:49 GMT; Max-Age=2592000; HttpOnly; SameSite=None
+        500:
+          description: Internal Server Error
+
+  /accounts/login:
+    get:
+      summary: 获取登录&注册页
+      tags:
+        - 页面
+      parameters:
+        - name: login_challenge
+          in: query
+          description: 授权服务器重定向时附加的参数，如果没有该参数返回501
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 未登录(无效身份)
+          headers:
+            X-CSRF-Token:
+              description: 防CSRF攻击
+              schema:
+                type: string
+                example: sPewarDy8b4cWKpBPSmLtCtvsgnwjvumDLlbpLJWbKBU8hif/5uGpPQLpTNezWvuqy6d/xuTa8EBYajPB6PF/g==
+        302:
+          description: 已登录(有效身份)
+          headers:
+            Location:
+              description: 下一步
+              schema:
+                type: string
+                example: https://example.com/oauth2/auth?audience=&client_id=auth-code-client&login_verifier=80a7bdc50ea4452e8dc0577e16d0c9ca&max_age=0&nonce=zqfbvntpxuqtneeslohezajy&prompt=&redirect_uri=http%3A%2F%2F127.0.0.1%3A5555%2Fcallback&response_type=code&scope=openid+offline&state=lhlnrxfixqgraohbfsbeokxr
+        404:
+          description: Not found
+        500:
+          description: Internal Server Error
+        501:
+          description: Not Implemented
+
+  /{version}/accounts/login:
+    post:
+      summary: 登录
+      tags:
+        - 认证与授权
+      parameters:
+        - $ref: '#/components/parameters/version'
+        - name: X-CSRF-Token
+          in: header
+          description: >-
+            防CSRF攻击，客户端从“获取登录页”的响应头中读取X-CSRF-Token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  description: 账户，也可以是手机号或邮箱
+                  type: string
+                password:
+                  description: 账户密码, 需用bcrypt函数进行处理
+                  type: string
+                type:
+                  description: 登录凭据类型，账户或手机号或邮箱
+                  enum:
+                    - account
+                    - phone
+                    - email
+                  example: account
+                remember:
+                  description: 是否记住登录状态（设置cookie的max-age）
+                  type: boolean
+                challenge:
+                  description: 防CSRF，由授权服务器重定向客户端到登录页面时附加在URL后面
+      responses:
+        200:
+          description: 身份认证失败
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicResponse'
+        302:
+          description: 身份认证成功
+          headers:
+            Location:
+              description: 下一步
+              schema:
+                type: string
+                example: https://example.com/oauth2/auth?audience=&client_id=auth-code-client&login_verifier=015d478bbb4e4af8988cd4c2dc07ae40&max_age=0&nonce=zqfbvntpxuqtneeslohezajy&prompt=&redirect_uri=http%3A%2F%2F127.0.0.1%3A5555%2Fcallback&response_type=code&scope=openid+offline&state=lhlnrxfixqgraohbfsbeokxr
+        500:
+          description: Internal Server Error
+
+  /{version}/accounts:
+    post:
+      summary: 注册
+      tags:
+        - 认证与授权
+      parameters:
+        - $ref: '#/components/parameters/version'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  description: 账户
+                  type: string
+                password:
+                  description: 账户密码, 需用bcrypt函数进行处理
+                  type: string
+                email:
+                  description: 邮箱
+                  type: string
+                phone:
+                  description: 手机号
+                  type: string
+                smsCaptcha:
+                  description: 短信验证码
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicResponse'
+        500:
+          description: Internal Server Error
+
+  /{version}/accounts/logout:
+    post:
+      summary: 登出
+      tags:
+        - 认证与授权
+      parameters:
+        - $ref: '#/components/parameters/version'
+      responses:
+        302:
+          description: 成功登出
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicResponse'
+        500:
+          description: Internal Server Error
+   
+  /accounts/consent:
+    get:
+      summary: 获取权限选择页面
+      tags:
+        - 页面
+      parameters:
+        - name: consent_challenge
+          in: query
+          description: >-
+            授权服务器重定向时附加的参数，如果没有该参数返回501
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          headers:
+            X-CSRF-Token:
+              description: >-
+               防CSRF攻击
+              schema:
+                type: string
+                example: sPewarDy8b4cWKpBPSmLtCtvsgnwjvumDLlbpLJWbKBU8hif/5uGpPQLpTNezWvuqy6d/xuTa8EBYajPB6PF/g==
+        404:
+          description: Not found
+        500:
+          description: Internal Server Error
+        501:
+          description: Not Implemented
+
+  /{version}/accounts/consent:
+    post:
+      summary: 提交授权内容
+      tags:
+        - 认证与授权
+      parameters:
+        - $ref: '#/components/parameters/version'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  description: 账户，也可以是手机号或邮箱
+                  type: string
+                password:
+                  description: 账户密码, 需用bcrypt函数进行处理
+                  type: string
+                type:
+                  description: 登录凭据类型，账户或手机号或邮箱
+                  enum:
+                    - account
+                    - phone
+                    - email
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicResponse'
+        302:
+          description: 授权成功
+          headers:
+            Location:
+              description: 下一步
+              schema:
+                type: string
+                example: https://example.com/oauth2/auth?audience=&client_id=auth-code-client&consent_verifier=ee9afb2655b547c2ab62184c679f96c8&max_age=0&nonce=vnlkmjxqrwsnrgsglvixoyzm&prompt=&redirect_uri=http%3A%2F%2F127.0.0.1%3A5555%2Fcallback&response_type=code&scope=openid+offline&state=wnygzwcmbsydbrdosherqxmg
+        500:
+          description: Internal Server Error
+
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+    OpenID:
+      type: openIdConnect
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+      
+  parameters:
+    version:
+      name: version
+      in: path
+      description: >-
+        API version, default v1
+      required: true
+      schema:
+        type: string
+        example: v1
+            
+  schemas:
+    BasicResponse:
+      title: 基本响应
+      type: object
+      properties:
+        code:
+          description: 错误编号，0表示无错误，其他表示错误
+          type: integer
+          example: 0
+        msg:
+          description: 错误信息，与错误编号对应，可通过错误编号在错误信息查找表中找到
+          type: string
+          example: ""
+

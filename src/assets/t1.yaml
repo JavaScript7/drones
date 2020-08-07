@@ -1,0 +1,143 @@
+openapi: 3.0.3
+
+info:
+  title: 无人机综合管理平台
+  description: >-
+    厦门安智达信息科技有限公司无人机综合管理平台HTTP API文档(仅供内部使用)
+  version: 1.0.0
+
+servers:
+- url: https://dim.meiyafly.com
+  description: 测试环境
+- url: https://dim.xmazd.com
+  description: 生产环境
+
+paths:
+  /:
+    get:
+      summary: 获取浏览器端应用，即用户入口
+      security:
+        - OpenID: []
+      tags:
+        - 页面
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicResponse'
+        302:
+          description: 需要身份认证
+          headers:
+            Loacation:
+              description: 下一步
+              schema:
+                type: string
+                example: https://example.com/oauth2/auth?audience=&client_id=auth-code-client&max_age=0&nonce=zqfbvntpxuqtneeslohezajy&prompt=&redirect_uri=http%3A%2F%2F127.0.0.1%3A5555%2Fcallback&response_type=code&scope=openid+offline&state=lhlnrxfixqgraohbfsbeokxr
+        404:
+          description: Not found
+  /callback:
+    get:
+      summary: 将授权码转换为Token
+      description: 授权服务器token端点的代理，授权服务器会将浏览器应用重定向至此
+      tags:
+        - Token
+      parameters:
+        - name: state
+          in: query
+          description: 随机字符串，由应用程序重定向用户到授权服务器时传递的随机字符串，在用户登录并同意或静止授权后由授权服务器添加
+          required: true
+          schema:
+            type: string
+        - name: code
+          in: query
+          description: 授权码，在用户登录并授权同意后的重定向时，由授权服务器添加
+          schema:
+            type: string
+        - name: error
+          in: query
+          description: 授权错误，在用户登录并授权禁止后的重定向时，由授权服务器添加
+          schema:
+            type: string
+        - name: error_description
+          in: query
+          description: 授权错误描述，在用户登录并授权禁止后的重定向时，由授权服务器添加
+          schema:
+            type: string
+      responses:
+        302:
+          description: Found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/BasicResponse'
+                  - $ref: '#/components/schemas/Code2TokenResponse'
+
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+    OpenID:
+      type: openIdConnect
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+
+  parameters:
+    version:
+      name: version
+      in: path
+      description: >-
+        API version
+        **Example: v1
+      required: true
+      schema:
+        type: string
+        example: v1
+            
+  schemas:
+    BasicResponse:
+      title: 基本响应
+      type: object
+      properties:
+        code:
+          description: 错误编号，0表示无错误，其他表示错误
+          type: integer
+          example: 0
+        msg:
+          description: 错误信息，与错误编号对应，可通过错误编号在错误信息查找表中找到
+          type: string
+          example: ""
+    Code2TokenResponse:
+      title: 授权码交换令牌响应
+      type: object
+      properties:
+        access_token:
+          description: 访问令牌
+          type: string
+          example: 4WB587K6tSUlfkkuKBuTVLk9I1wD86tW8YG4hs0ND7M.DMm4Qs6DjJmaCg5BT6oHxlqEZ_cWVAgcbwpRbEz2hJ8
+        refresh_token:
+          description: 刷新访问令牌的令牌
+          type: string
+          example: Tj2cfen4EqskJshb9nEKM5LFGeFxBHj3KSdvy81bIGs.kq04m-j-vWoUGa2dtppW-6K-dI9QqpqbfVjQaTIwpoQ
+        expires_in:
+          description: 到期时间
+          type: string
+          example: Thu, 11 Jun 2020 04:22:02 UTC
+        id_token:
+          description: ID令牌
+          type: string
+          example: eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzoyMmE3MmEyNy0xOGYxLTQ0MTYtODU1ZC0xYWY2MzcxNzZjYzgiLCJ0eXAiOiJKV1QifQ.eyJhdF9oYXNoIjoiN1BCbTZmYlZSS3M2TnNLcTU0WEU0dyIsImF1ZCI6WyJhdXRoLWNvZGUtY2xpZW50Il0sImF1dGhfdGltZSI6MTU5MTg0NTcxMSwiZXhwIjoxNTkxODQ5MzIyLCJpYXQiOjE1OTE4NDU3MjIsImlzcyI6Imh0dHA6Ly8xMjcuMC4wLjE6NDQ0NC8iLCJqdGkiOiIxY2Q5NjZmZS1lOWQ2LTQyYjAtODkzNS04OGI4NTQ4NDQyMzQiLCJub25jZSI6InZubGttanhxcndzbnJnc2dsdml4b3l6bSIsInJhdCI6MTU5MTg0NTcwMiwic2lkIjoiYzUxZDQ2MGUtZjNjMy00MWRlLWE1MjktZDk4YWMxZDQ4MDViIiwic3ViIjoiZm9vQGJhci5jb20ifQ.XQykernAvdFZ9mZCz_0y5akmNdw9bmZ8JAlz-RiFVsMEvY7LqAJZ3oIXPN_RlCuevipFY9UdkcybEV7HwHKgZR24laINyM_YjFgL0t7hLcHB83D6lZNCzPWcxNaEkuZgaQV4SbZZPpp9sN9f5MOxQQorFykwQdbPqyYiNqMUI7Tf6SjIz5cIAHZzhmY7aTPVvX1DmnybNaRZlVbKir7n_BgmuogvFzNL9JjAcjC97rgn-2bVhWmHUjtZh9m0TVRaJXelHAJviwcK5XnajPGWtjRgPGZ2_SV3tNnYvoDO-B0QfLdPZ7vpD-nnwe-J6haTIKnwUebkIyQ31u1xM0W-HYc-vlaHpvv3uhJMs9s0fbDpr7b8VR-c0cZRUZKySlFuQ4Ozf-QiMbXiNPCk0nXuvar3BU4kKFxGIR3tmpRRqT3AlJmeoljnnsoIcvG0YivfLq3H2RDUFt7DE-KmJxeGNVtnGk3hwZ08V9VyGIaWHDlaULgo7zgxnfZ9HguEZB8bxPzcbFG_PjKn3WVXrnizV-N545bKYrxoNjqsVgVRoSuCOqKnijvN1P2iR1KBKIeL8VBkPFQA3rdDj3XUZ7k0jaONId7U6Wab0kpAsrjvmQo2TASmvgoHUedaFmn3D3aXHHUquIhJvyGozTPWgZ7Bsu8cJAQ4Vs9um0-Ne_EGAMI
+
+tags:
+  - name: 页面
+    description: ""
+  - name: Token
+    description: ""

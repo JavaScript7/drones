@@ -1,0 +1,229 @@
+/*base style*/  
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, figure, footer, header, menu, nav, section, time, mark, audio, video, details, summary{ margin:0; padding:0;}  
+body{
+  margin: 0; 
+  padding: 0;
+  font-family: "Microsoft Yahei","Arial";
+  color:#333; 
+  background-color:#fff; 
+  font-size: 14px; 
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+h1, h2, h3, h4, h5, h6{
+  font-weight: normal;
+}
+a{ 
+  color:#2c3e50; 
+  text-decoration: none;
+}  
+a:hover{
+  text-decoration: none;
+}  
+img{ 
+  border: none; 
+  vertical-align: middle; 
+  max-width: 100%;
+}  
+i, em{
+  font-style: normal;
+}  
+ul, ol, li{ 
+  list-style-type: none;
+}  
+textarea{ 
+  resize: vertical;
+}  
+input, select, textarea, button{ 
+  outline: none;
+}
+input{
+  outline: none;
+}
+button:hover{
+  cursor: pointer;
+}
+button{
+  border: none;
+}
+.txt-hide{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.vercenter-pt{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.disblock{
+  display: block;
+}
+.disnone{
+  display: none;
+}
+.disline{
+  display: inline-block;
+}
+.g-fl{
+  float: left;
+}
+.gfl{
+  float: left;
+}
+.gfr{
+  float: right;
+}
+.g-c{ zoom:1;}
+.g-c:after{ clear:both; content:"."; display:block; height:0; visibility:hidden;}  
+.g-w{ max-width: 1200px; min-width: 980px; width: 96%; margin-left:auto; margin-right:auto;}  
+.g-hide{ display:none !important;}
+.clearfix:after{
+  display: block;
+  content: '';
+  clear: both;
+}
+.mb40{
+  margin-bottom: 40px;
+}
+.mb20{
+  margin-bottom: 20px;
+}
+.mb10{
+  margin-bottom: 10px;
+}
+.font20{
+  font-size: 20px;
+}
+.icon-bianji, .icon-iconfontshanchu5{
+  cursor: pointer;
+}
+.cursor:hover{
+  cursor: pointer;
+}
+/*去除高德地图logo下标和版本号*/
+.amap-logo, .amap-copyright{
+  display: none !important;
+}
+
+/*element css*/
+.drone-manage .el-table th{
+  color: #12B7FF;
+  padding: 0 !important;
+}
+.el-input__inner{
+  border-color: #797979 !important;
+}
+.el-date-editor--daterange{
+  border-color: #797979 !important;
+}
+.el-textarea__inner{
+  border-color: #797979 !important;
+}
+.textarea .el-form-item__content{
+  width: 830px;
+  height: 60px;
+}
+.textarea .el-textarea__inner{
+  height: 70px;
+}
+.edit-textarea .el-form-item__content{
+  width: 566px;
+  height: 70px;
+}
+.edit-textarea .el-textarea__inner{
+  height: 70px;
+}
+.upload .el-form-item__content{
+  width: 566px;
+}
+.upload .el-upload-list--picture-card .el-upload-list__item{
+  width: 120px;
+  height: 120px;
+}
+.upload .el-upload--picture-card{
+  width: 120px;
+  height: 120px;
+}
+.el-dialog__header{
+  background-color: #409eff;
+  /* background: #333; */
+}
+.el-dialog__title{
+  color: #fff !important;
+}
+.picture .el-dialog__headerbtn .el-dialog__close {
+  color: #fff !important;
+}
+.el-submenu__title span{
+  font-size: 18px !important;
+}
+li.el-submenu{
+  width: 220px;
+}
+.el-menu-item-group__title{
+  padding: 0 !important;
+  font-size: 16px !important;
+}
+.shadow{
+  box-shadow: 0 2px 6px 0 rgba(22, 50, 102, .2);
+}
+/* .el-table td, .el-table th.is-leaf,.el-table--border, .el-table--group{
+  border-color: black; 
+}
+.el-table--border::after, .el-table--group::after, .el-table::before{
+  border-color: black;
+} */
+
+/* @media screen and (min-width: 1600px) {
+  html {
+    overflow-y: scroll;
+  }016ca8afeb0c9fad154d14143e89fca1
+} */
+.province-city-area input{
+  width: 120px !important;
+}
+
+.color-red{
+  color: #B22635;
+  color: #F85C5C;
+  color: #F98484;
+  color: #FF885F;
+  color: #FC9D5D;
+  color: #FCBC62;
+  color: #D6BA8D;
+  color: #49CCC6;
+  color: #0FE1D4;
+  color: #FEC047;
+  color: #C299F9;
+  color: #02DB56;
+}
+
+.amap-info-content{
+  color: #F1E434;
+  background: #5F6F8E;
+  opacity: .8;
+}
+.amap-info-sharp{
+  border-top: 8px solid #5F6F8E !important;
+}
+.marker{
+  font-size: 14px;
+}
+.marker h3{
+  margin-bottom: 4px;
+  font-size: 18px;
+  color: #169BD5;
+}
+.marker .marbtom{
+  margin-bottom: 8px;
+}
+.marker .marbtom .disline{
+  width: 50%;
+}
