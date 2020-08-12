@@ -30,9 +30,14 @@ import {
   Menu,
   Submenu,
   MenuItem,
-  MenuItemGroup
+  MenuItemGroup,
+  Container,
+  Header,
+  Aside,
+  Main,
+  Loading,
+  MessageBox
 } from 'element-ui'
-import App from './App'
 import router from './router'
 // import videoPlayer from 'vue-video-player'
 // import 'video.js/dist/video-js.css'
@@ -43,16 +48,20 @@ import router from './router'
 
 import Video from "video.js"
 import "video.js/dist/video-js.min.css"
+import 'videojs-flash'
 Video.options.flash.swf = '../static/js/video-js.swf'
 Vue.prototype.$video = Video
 
 import api from './util/api'
 import bus from './assets/bus'
+import unit from './assets/unit'
+Vue.prototype.unit = unit
 
 import * as filters from './assets/filters'
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
+import App from './App'
 
 // Vue.use(videoPlayer)
 
@@ -88,7 +97,13 @@ Vue.use(Menu)
 Vue.use(Submenu)
 Vue.use(MenuItem)
 Vue.use(MenuItemGroup)
-// Vue.use(MessageBox)
+Vue.use(Container)
+Vue.use(Header)
+Vue.use(Aside)
+Vue.use(Main)
+Vue.use(Loading)
+Vue.component(MessageBox.name, MessageBox)
+Vue.prototype.$messageBox = MessageBox
 // Alert.install = Vue => Vue.prototype.$alert = Alert
 
 Vue.directive('auth', {
@@ -103,7 +118,6 @@ Vue.directive('auth', {
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {
-    // console.log(store.state.login)
     // if (store.state.token === 'token') {
     //   next()
     // } else {

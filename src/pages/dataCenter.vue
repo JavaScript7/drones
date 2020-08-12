@@ -1,14 +1,14 @@
 <template>
-  <div class="data-center">
-    <div class="contain clearfix">
+  <el-container class="data-center">
+    <el-aside class="contain clearfix" width="260px" v-if="manager">
       <div class="nav">
         <div class="title">账户列表</div>
         <ul>
           <li v-for="e in accounts" :key="e.id" @click="selectActAccount(e.id)">{{e.name}}</li>
         </ul>
       </div>
-    </div>
-    <div class="content">
+    </el-aside>
+    <el-main class="data-nav">
       <ul>
         <router-link
           v-for="e in navList"
@@ -19,11 +19,11 @@
           {{e.value}}
         </router-link>
       </ul>
-      <div class="main">
-        <router-view></router-view>
+      <div class="data-content">
+        <router-view :selectAccount="curAccount" :myName="myName"></router-view>
       </div>
-    </div>
-  </div>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
@@ -35,17 +35,25 @@ export default {
   data () {
     return {
       accounts: [],
+      curAccount: '', // 当前账号id
       navList: [
         {id: 0, value: '图片', path: '/picture'},
         {id: 1, value: '视频', path: '/video'},
         {id: 2, value: '飞行统计', path: '/statistics'},
         {id: 3, value: '飞行日志', path: '/flightLog'}
-      ]
+      ],
+      myName: ''
     }
   },
-  created () {},
+  created () {
+    if (this.manager) {
+      this.getAccounts()
+    }
+  },
   mounted () {
-    this.getAccounts()
+    setTimeout(() => {
+      this.myName = 'jkl'
+    }, 2000)
   },
   watch: {},
   computed: {
@@ -69,11 +77,12 @@ export default {
       }).then(res => {
         if (res.Status === 0) {
           this.accounts = res.Data.subaccount
+          this.curAccount = this.accounts[0].id
         }
       })
     },
     selectActAccount (id) {
-      // this.$bus.$emit('')
+      this.curAccount = id
     }
   }
 }
@@ -81,16 +90,16 @@ export default {
 
 <style lang="scss" scoped>
 .data-center{
+  display: flex;
   position: relative;
   // min-width: 1200px;
   .contain{
+    flex-shrink: 0;
     // float: left;
     width: 260px;
-    height: 857px;
+    min-height: 857px;
     // overflow: hidden;
     .nav{
-      float: left;
-      width: 260px;
       height: 100%;
       text-align: center;
       background: #555;
@@ -102,6 +111,7 @@ export default {
       ul{
         li{
           height: 36px;
+          line-height: 36px;
           color: #A9A9A9;
           font-size: 16px;
           &:hover{
@@ -111,13 +121,16 @@ export default {
       }
     }
   }
-  .content{
-    position: absolute;
-    top: 0;
-    left: 260px;
+  .data-nav{
+    // position: absolute;
+    // position: absolute;
+    // right: 0;
+    // top: 0; 
+    width: 100%;
+    // padding-left: 260px;
     // overflow: hidden;
     ul{
-      width: 800px;
+      width: 480px;
       height: 40px;
       margin: 0 auto;
       .active{
@@ -137,6 +150,7 @@ export default {
         }
       }
     }
+    .data-content{}
   }
 }
 </style>

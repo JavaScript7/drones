@@ -71,7 +71,7 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="16" style="text-align: center;">
+        <el-col :span="16" style="text-align: center;margin-top: 60px;">
           <el-button type="primary" @click="submit">提交</el-button>
         </el-col>
       </el-row>
@@ -241,6 +241,7 @@ export default {
 
 <style lang="scss" scoped>
 .container{
+  height: 500px;
   padding: 30px 20px 0;
   border: 1px solid #797979;
   color: #333;

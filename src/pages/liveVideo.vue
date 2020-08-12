@@ -46,6 +46,10 @@ export default {
     this.fullScreen()
   },
   mounted () {
+    this.$bus.$on('father', data => {
+      console.log(15)
+      console.log(data)
+    })
     // this.$bus.$on('liveOnline', data => { // 直播上线 {"type":30004,"payload":{"flyer_id":3}}
     //   this.$forceUpdate()
     //   let arr = []
@@ -87,8 +91,9 @@ export default {
       }
     },
     liveSrc () { // 当前直播地址
-      return 'rtmp://8.129.9.170:1935/live/flyer_16'
+      // return 'rtmp://8.129.9.170:1935/live/flyer_16'
       // return this.$route.params.src
+      return ''
     }
   },
   methods: {

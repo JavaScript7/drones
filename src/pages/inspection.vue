@@ -93,37 +93,42 @@
                 </div>
                 <video-plyer :src="e.src" style="width: 402px; height: 302px;"></video-plyer>
               </li> -->
+              <!-- <button @click="showLOw">低级</button> -->
               <li style="width: 402px;">
                 <div class="video-title">
                   <!-- 飞手:{{liveSources[0] ? (liveSources[0].src).substring(35) : ''}} -->
-                  <span>飞手{{'' | findFlyer}}</span>
+                  <!-- 飞手{{liveSources[0] ? (liveSources[0].src).substring(35) : ''}} -->
+                  直播窗口1
                   <span class="full-btn disinline iconfont icon-quanping" @click="onPlayerFullScreen(1, liveSources[0].src)"></span>
                 </div>
-                <video-plyer :src="liveSources[0] ? liveSources[0].src : 'rtmp://8.129.9.170:1935/live/flyer_16'" style="width: 402px; height: 302px;"></video-plyer>
-                <!-- <video-plyer :src="'rtmp://8.129.9.170:1935/live/flyer_3'" style="width: 402px; height: 302px;"></video-plyer> -->
+                <!-- <video-plyer id="liveA" :src="liveSources[0] ? liveSources[0].src : ''" ref="live1" style="width: 402px; height: 302px;"></video-plyer> -->
+                <video-plyer src="rtmp://8.129.9.170:1935/live/flyer_20" style="width: 402px; height: 302px;"></video-plyer>
               </li>
               <li style="width: 402px;">
                 <div class="video-title">
-                  飞手:{{liveSources[1] ? (liveSources[1].src).substring(35) : ''}}
+                  直播窗口2
+                  <!-- 飞手:{{liveSources[1] ? (liveSources[1].src).substring(35) : ''}} -->
                   <span class="full-btn disinline iconfont icon-quanping" @click="onPlayerFullScreen(2, liveSources[1].src)"></span>
                 </div>
-                <video-plyer :src="liveSources[1] ? liveSources[1].src : 'rtmp://8.129.9.170:1935/live/flyer_16'" style="width: 402px; height: 302px;"></video-plyer>
-                <!-- <video-plyer :src="'rtmp://8.129.9.170:1935/live/flyer_16'" style="width: 402px; height: 302px;"></video-plyer> -->
+                <!-- <video-plyer :src="liveSources[1] ? liveSources[1].src : ''" style="width: 402px; height: 302px;"></video-plyer> -->
+                <video-plyer src="rtmp://8.129.9.170:1935/live/flyer_19" style="width: 402px; height: 302px;"></video-plyer>
               </li>
-              <li style="width: 402px;">
+              <li style="width: 402px;margin-top: 10px;">
                 <div class="video-title">
-                  飞手:{{liveSources[2] ? (liveSources[2].src).substring(35) : ''}}
+                  直播窗口3
+                  <!-- 飞手:{{liveSources[2] ? (liveSources[2].src).substring(35) : ''}} -->
                   <span class="full-btn disinline iconfont icon-quanping" @click="onPlayerFullScreen(3, liveSources[2].src)"></span>
                 </div>
-                <video-plyer :src="liveSources[2] ? liveSources[2].src : 'rtmp://8.129.9.170:1935/live/flyer_16'" style="width: 402px; height: 302px;"></video-plyer>
+                <video-plyer :src="liveSources[2] ? liveSources[2].src : ''" style="width: 402px; height: 302px;"></video-plyer>
                 <!-- <video-plyer :src="'rtmp://8.129.9.170:1935/live/flyer_16'" style="width: 402px; height: 302px;"></video-plyer> -->
               </li>
-              <li style="width: 402px;">
+              <li style="width: 402px;margin-top: 10px;">
                 <div class="video-title">
-                  飞手:{{liveSources[3] ? (liveSources[3].src).substring(35) : ''}}
+                  直播窗口4
+                  <!-- 飞手:{{liveSources[3] ? (liveSources[3].src).substring(35) : ''}} -->
                   <span class="full-btn disinline iconfont icon-quanping" @click="onPlayerFullScreen(4, liveSources[3].src)"></span>
                 </div>
-                <video-plyer :src="liveSources[3] ? liveSources[3].src : 'rtmp://8.129.9.170:1935/live/flyer_16'" style="width: 402px; height: 302px;"></video-plyer>
+                <video-plyer :src="liveSources[3] ? liveSources[3].src : ''" style="width: 402px; height: 302px;"></video-plyer>
                 <!-- <video-plyer :src="'rtmp://8.129.9.170:1935/live/flyer_16'" style="width: 402px; height: 302px;"></video-plyer> -->
               </li>
             </ul>
@@ -160,6 +165,8 @@ export default {
       onlineAccount: [],
       accountInfos: [], // 账户信息（团队，飞手，无人机）
       onlines: [],
+      player: null,
+      options: [],
       map: null,
       layer: false, // 卫星图层是否开启
       satelliteLayer: null,
@@ -330,6 +337,14 @@ export default {
       }
       this.liveSources = deWeightFour(arr)
       if (this.liveSources.length !== 0) {
+        // this.$refs.video.src = this.liveSources[0].src
+        // console.log(this.$video('my-video').src)
+        // let player = this.$video('my-video').src(this.liveSources[0].src)
+        let play = this.$video('my-video', {
+          sources: [
+            {src: this.liveSources[0].src, type: 'rtmp/mp4'}
+          ]
+        })
         this.isLive = true
       } else {
         this.isLive = false
@@ -369,6 +384,9 @@ export default {
         token: this.$store.state.userInfo.SocketToken
       }
     }
+    // src () {
+    //   return this.options.sources[0].src
+    // }
   },
   methods: {
     initData (data) {
@@ -813,7 +831,7 @@ export default {
 .videos{
   position: relative;
   .inspection{
-    height: 880px;
+    height: 900px;
     position: relative;
     // overflow: hidden;
     .nav-list{
@@ -838,17 +856,16 @@ export default {
       top: 0;
       left: 220px;
       min-width: 900px;
-      padding: 20px 14px;
-      height: 100%;
+      padding: 20px 0 0;
+      // height: 100%;
       .map-area{
         float: left;
         position: relative;
         width: 46%;
-        height: 756px;
+        height: 828px;
         .title{
           width: 220px;
           height: 50px;
-          margin-bottom: 40px;
           line-height: 50px;
           text-align: center;
           font-size: 26px;
@@ -863,7 +880,7 @@ export default {
         }
         .layer{
           position: absolute;
-          top: 90px;
+          top: 50px;
           left: 0;
           width: 140px;
           padding: 10px 18px;
@@ -919,11 +936,10 @@ export default {
       .video-area{
         float: left;
         width: 54%;
-        height: 700px;
+        height: 770px;
         .title{
           width: 220px;
           height: 50px;
-          margin-bottom: 40px;
           line-height: 50px;
           text-align: center;
           font-size: 26px;
@@ -935,7 +951,7 @@ export default {
         .video{
           position: relative;
           // width: 98%;
-          padding: 20px 36px;
+          padding: 50px 14px;
           background-color: #7F7F7F;
           .no-live{
             position: absolute;
@@ -952,7 +968,8 @@ export default {
               // height: 180px;
               margin-bottom: 20px;
               &:nth-child(2n){
-                margin-left: 10px;
+                margin-left: 18px;
+                margin-top: 2px;
               }
               .video-title{
                 position: relative;
@@ -967,7 +984,7 @@ export default {
                   top: 0;
                   right: 10px;
                   width: 40px;
-                  height: 100%;
+                  // height: 100%;
                   font-size: 28px;
                   &:hover{
                     cursor: pointer;

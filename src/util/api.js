@@ -75,6 +75,12 @@ const api = { // (错误：'​/api/)
 
 export default api
 
+/**
+ * 分页
+ * limit显示一页有多少条数（默认15条）
+ * offset显示当前第几页（默认1）
+ * total总计多少条数
+ */
 /*
 console.log(window.location.hash.split('/')[1])
 {
@@ -209,5 +215,11 @@ let data = {
     x: [2012-1, 2012-2],
     y: [0, 0]
   },
+}
+
+watch: {
+  $route (to, from) { // to到那个路由from从那个路由来
+    // to.params.name
+  }
 }
 */

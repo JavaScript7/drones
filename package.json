@@ -15,13 +15,16 @@
     "crypto-js": "^4.0.0",
     "echarts": "^4.8.0",
     "element-ui": "^2.13.2",
+    "file-saver": "^2.0.2",
     "html2canvas": "^1.0.0-rc.5",
     "qs": "^6.9.4",
     "recordrtc": "^5.6.1",
-    "video.js": "^5.3.3",
+    "video.js": "^5.5.3",
+    "videojs-flash": "^2.2.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
-    "vuex": "^3.4.0"
+    "vuex": "^3.4.0",
+    "xlsx": "^0.16.5"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -51,6 +54,7 @@
     "postcss-url": "^7.2.1",
     "rimraf": "^2.6.0",
     "sass-loader": "^7.3.1",
+    "script-loader": "^0.7.2",
     "semver": "^5.3.0",
     "shelljs": "^0.7.6",
     "uglifyjs-webpack-plugin": "^1.1.1",

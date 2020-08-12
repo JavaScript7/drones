@@ -2,10 +2,10 @@
   <div class="player">
     <video
       style="width: 100%; height: 100%; color: black;"
-      class="video-js vjs-big-play-centered video-live" autoplay controls preload="auto" data-setup='{techOrder: ["flash","html5"]}'>
+      class="video-js vjs-big-play-centered video-live" autoplay controls preload="auto" data-setup=''>
       <source :src="liveSrc" type="rtmp/mp4"/>
     </video>
-    <!-- <embed
+    <!-- <embed {techOrder: ["flash","html5"]}
       width="300"
       height="70"
       class="openFlash"
@@ -22,7 +22,6 @@ export default {
   },
   mounted () {
     this.flashChecker()
-    // console.log(this.liveSrc)
   },
   computed: {
     liveSrc () {
@@ -39,6 +38,19 @@ export default {
     }
   },
   methods: {
+    getOnline () {
+      this.$axios.get(this.api.online, {
+        params: this.params
+      }).then(res => {
+        if (res.Status === 0) {
+          res.Data.forEach(e => {
+            this.liveSources.push({
+              src: 'rtmp://8.129.9.170:1935/live/' + e // flyer_6 // flyer_3
+            })
+          })
+        }
+      })
+    },
     flashChecker () {
       var hasFlash = 0;         //是否安装了flash
       var flashVersion = 0; //flash版本

@@ -1,5 +1,8 @@
 import axios from 'axios'
 import qs from 'qs'
+// import Vue from 'vue'
+// import Router from 'vue-router'
+import { MessageBox } from 'element-ui'
 
 const ur2 = 'http://8.129.9.170:4596'
 const url1 = 'https://10.0.1.146:4596'
@@ -45,20 +48,25 @@ instance.interceptors.request.use(
 // respone拦截器
 instance.interceptors.response.use(
   response => {
-    const res = response.data
-    // console.log(response.status)
-    if (res.status && res.status !== 200) {
-      // 登录超时,重新登录
-      if (res.status === 401) {
-        // store.dispatch('FedLogOut').then(() => {
-        //   location.reload()
-        // })
-      }
-      console.log(res)
-      return Promise.reject(res || 'error')
-    } else {
-      return Promise.resolve(res)
+    let res = response.data // {data: {Data: '', Msg: '', Status: ''}, status: 200}
+    // console.log(res)
+    if (res.Msg === '认证失败，权限错误') {
+      MessageBox.alert('登录信息超时，请重新登录！', '登录超时', {
+        callback: action => {
+          location.href = '/login'
+        }
+      })
+      return false
     }
+    // if (res.Status && res.Status !== 200) { // 登录超时,重新登录
+    //   if (res.Status === 401) {
+    //     store.dispatch('FedLogOut').then(() => {
+    //       location.reload()
+    //     })
+    //   }
+    //   return Promise.reject(res || 'error')
+    // } else {}
+    return Promise.resolve(res)
   },
   error => {
     console.log(error)

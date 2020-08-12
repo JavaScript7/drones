@@ -33,3 +33,17 @@ npm install dplayer -S
 
 let Hls = require('hls.js');
 import DPlayer from 'dplayer';
+
+# excel
+npm install -S file-saver
+npm install -S xlsx
+npm install -D script-loader
+
+build/webpack.base.conf.js:
+alias: {
+    'excel': path.resolve(__dirname, '../src/excel')
+}
+
+src/excel:
+Blob.js
+export2Excel.js

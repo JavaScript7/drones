@@ -1,9 +1,9 @@
 <template>
-  <div class="main">
+  <div class="interface">
     <div class="head clearfix">
       <div class="logo">
         <img src="../../static/img/logo.png" alt="">
-        <div class="title">××市应急管理无人机综合数据平台</div>
+        <div class="title">应急无人机数据管理平台</div>
       </div>
       <ul class="nav">
         <router-link
@@ -197,7 +197,7 @@ export default {
             flyerName = e.nickname
           }
         })
-        this.$message.success('飞手id'+flyerName+'直播上线')
+        this.$message.success('飞手 '+flyerName+' 直播上线')
         this.$bus.$emit('liveOnline', {id: data.payload.id, name: flyerName}) // {"type":30004,"payload":{"id":16}}
       }
       if (data.type === 30005) { // 直播下线
@@ -207,7 +207,7 @@ export default {
             flyerName = e.nickname
           }
         })
-        this.$message.success('飞手id'+flyerName+'直播下线')
+        this.$message.success('飞手 '+flyerName+' 直播下线')
         this.$bus.$emit('liveOffine', {id: data.payload.id, name: flyerName})
       }
       if (data.type === 30006) {
@@ -317,6 +317,8 @@ export default {
           sessionStorage.removeItem('subaccounts')
           sessionStorage.removeItem('droneInfo')
           this.$router.push('login')
+        } else if (res.Msg === '认证失败，权限错误') {
+          this.$router.push({path: 'login'})
         }
       })
     },
@@ -339,8 +341,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.head{
+.interface{
+  width: 100%;
   min-width: 1400px;
+  overflow-y: hidden;
+}
+.head{
   height: 80px;
   background-color: #000;
   .logo{

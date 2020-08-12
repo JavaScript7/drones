@@ -354,12 +354,52 @@
   })
   // console.log(liveSources)
 }{
-  let arr = [
-    {id: 1, path: "图片", parent: 0, user_id: 100001},
-    {id: 3, path: "视频", parent: 0, user_id: 100001},
-    {id: 4, path: "飞手1", parent: 1, user_id: 100001},
-    {id: 5, path: "few", parent: 0, user_id: 100001},
-    {id: 6, path: "2020-7-30 飞手1", parent: 1, user_id: 100001},
-    {id: 7, path: "图片/2020-7-30 飞手1", parent: 1, user_id: 100001}
-  ]
+  // let {href} = this.$router.resolve({
+  //   name: 'track',
+  //   params: {
+  //     id
+  //   }
+  // })
+  // window.open(href, '_blank')
+  // return false
+  // this.$axios.post(this.api.logPos, {
+  //   id
+  // }, {
+  //   params: this.params
+  // }).then(res => {
+  //   if (res.Status === 0) {
+  //     console.log(res)
+  //   }
+  // })
+  // this.$router.push('/track')
+}{
+  // let arr = [
+  //   {id: 1, path: "图片", parent: 0, user_id: 100001},
+  //   {id: 3, path: "视频", parent: 0, user_id: 100001},
+  //   {id: 4, path: "飞手1", parent: 1, user_id: 100001},
+  //   {id: 5, path: "few", parent: 0, user_id: 100001},
+  //   {id: 6, path: "2020-7-30 飞手1", parent: 1, user_id: 100001},
+  //   {id: 7, path: "图片/2020-7-30 飞手1", parent: 1, user_id: 100001}
+  // ]
+  // let arr = [{
+  //     latitude: 24.427857109238573,
+  //     longtitue: 118.12081509691218
+  //   }, {
+  //     latitude: 24.427857109238573,
+  //     longtitue: 118.12081509691218
+  // }]
+  // let obj = []
+  // for (let i=0; i<arr.length; i++) {
+  //   obj.push([arr[i].latitude, arr[i].longtitue])
+  // }
+  // console.log(obj)
+}{
+  let tem = '1596839386'
+  let date = new Date(tem * 1000)
+  let year = date.getFullYear()
+  let num = 11
+  if (num < 10) {
+    num = '0' + num
+  }
+  console.log(num)
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="review-list">
     <el-form :inline="true" :label-position="'right'" v-if="manager">
       <el-form-item label="选择用户" label-width="120px">
         <el-select v-model="actSelect" clearable>
@@ -954,7 +954,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container{
+.review-list{
   padding: 30px 20px 0;
   border: 1px solid #797979;
   overflow: hidden;

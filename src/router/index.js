@@ -71,36 +71,28 @@ export default new Router({
           meta: {
             requireAuth: true
           },
-          component: resolve => require(['@/components/picture'], resolve)
-          // children: [{
-          //   path: '/picture',
-          //   name: 'picture',
-          //   meta: {
-          //     requireAuth: true
-          //   },
-          //   component: resolve => require(['@/components/picture'], resolve)
-          // }]
+          component: resolve => require(['@/pages/picture'], resolve)
         }, {
           path: '/video',
           name: 'video',
           meta: {
             requireAuth: true
           },
-          component: resolve => require(['@/components/video'], resolve)
+          component: resolve => require(['@/pages/video'], resolve)
         }, {
           path: '/statistics',
           name: 'statistics',
           meta: {
             requireAuth: true
           },
-          component: resolve => require(['@/components/statistics'], resolve)
+          component: resolve => require(['@/pages/statistics'], resolve)
         }, {
           path: '/flightLog',
           name: 'flightLog',
           meta: {
             requireAuth: true
           },
-          component: resolve => require(['@/components/flightLog'], resolve)
+          component: resolve => require(['@/pages/flightLog'], resolve)
           // children: [{
           //   path: '/track',
           //   name: 'track',
@@ -120,15 +112,24 @@ export default new Router({
         children: [{
           path: '/memberManage',
           name: 'memberManage',
-          component: resolve => require(['@/components/memberManage'], resolve)
+          component: resolve => require(['@/components/memberManage'], resolve),
+          meta: {
+            requireAuth: true
+          }
         }, {
           path: '/deviceDetail',
           name: 'deviceDetail',
-          component: resolve => require(['@/components/deviceDetail'], resolve)
+          component: resolve => require(['@/components/deviceDetail'], resolve),
+          meta: {
+            requireAuth: true
+          }
         }, {
           path: '/authManage',
           name: 'authManage',
-          component: resolve => require(['@/components/authManage'], resolve)
+          component: resolve => require(['@/components/authManage'], resolve),
+          meta: {
+            requireAuth: true
+          }
         }]
       }, {
         path: '/record',
@@ -142,23 +143,26 @@ export default new Router({
       path: '/live:src',
       name: 'live',
       meta: {
-        requireAuth: false
+        requireAuth: true
       },
       component: resolve => require(['@/pages/liveVideo'], resolve)
     }, {
       path: '/test',
       name: 'test',
       meta: {
-        requireAuth: false
+        requireAuth: true
       },
       component: resolve => require(['@/pages/test'], resolve)
     }, {
       path: '/track:id',
       name: 'track',
       meta: {
-        requireAuth: false
+        requireAuth: true
       },
       component: resolve => require(['@/components/track'], resolve)
+    }, {
+      path: '*',
+      redirect: '/login'
     }
   ]
 })

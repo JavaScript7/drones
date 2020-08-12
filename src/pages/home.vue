@@ -1,199 +1,199 @@
 <template>
-  <div>
-    <div class="container">
-      <div class="map" id="maps"></div>
-      <div class="layer">
-        <div class="layer-item">
-          <button :class="activeMap ? 'btn active-map' : 'btn'" id="add-layer" @click="addSatelliteLayer">卫星图层</button>
-          <button :class="activeMap ? 'btn' : 'btn active-map'" id="remove-layer" @click="removeSatelliteLayer">标准图层</button>
-        </div>
+  <div class="home">
+    <div class="map" id="maps"></div>
+    <div class="layer">
+      <div class="layer-item">
+        <button :class="activeMap ? 'btn active-map' : 'btn'" id="add-layer" @click="addSatelliteLayer">卫星图层</button>
+        <button :class="activeMap ? 'btn' : 'btn active-map'" id="remove-layer" @click="removeSatelliteLayer">标准图层</button>
       </div>
-      <div class="manage" ref="manage">
-        <div class="arrow" @click="showNav">
-          <p v-if="isShow">&gt;</p>
-          <p v-else>&lt;</p>
-        </div>
-        <div class="title">
-          <h3>××市应急管理无人机综合数据平台</h3>
-        </div>
-        <div class="drone-manage">
-          <div class="title">无人机管理</div>
-          <el-row class="mb10" v-if="manager">
-            <el-col :span="12">
-              <el-select v-model="selectVal" size="small" clearable @change="getAreaSearchAccountInfo">
-                <el-option
-                  v-for="item in areas"
-                  :key="item.id"
-                  :label="item.area"
-                  :value="item.area">
-                </el-option>
-              </el-select>
-            </el-col>
-          </el-row>
-          <el-row class="search" v-if="manager">
-            <el-col :span="12">
-              <el-input v-model="keyword" prefix-icon="el-icon-search" placeholder="请输入关键字" size="small" clearable></el-input>
-            </el-col>
-            <el-col :span="12">
-              <el-button size="small" @click="getAreaSearchAccountInfo">搜索</el-button>
-              <el-button size="small">重置</el-button>
-            </el-col>
-          </el-row>
-          <el-table
-            :data="subaccounts"
-            border
-            max-height="250"
-            class="table"
-            :row-style="{height: '26px'}"
-            :cell-style="{padding: '0'}"
-            style="width: 100%">
-            <el-table-column
-              prop="name"
-              label="账户"
-              align="center">
-            </el-table-column>
-            <el-table-column
-              label="无人机数量"
-              align="center"
-              width="116">
-              <template slot-scope="scope">{{scope.row.drones | dronesNum}}</template>
-            </el-table-column>
-            <el-table-column
-              prop="address"
-              label="操作"
-              align="center"
-              width="100">
-              <template slot-scope="scope">
-                <el-button @click="look(scope.$index, scope.row)" type="text" size="small">查看</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <div class="inline">
-            <div class="title">在线无人机</div>
-            <ul>
-              <li v-for="(e, i) in inlineDrones" :key="e.id" class="clearfix">
-                <!-- <img :src="e.img" alt=""> -->
-                <!-- <img src="../../static/img/u17.jpg" alt="" class="line"> -->
-                <span class="line">{{i}}</span>
-                <span class="line account-name txt-hide" title="无人机所属账户">{{e.flyer_id | flyerId(flyers)}}</span>
-                <span class="line team-name txt-hide" title="无人机所属团队">{{e.flyer_id | teamId(teams)}}</span>
-                <span :class="e.show ? 'active-posi line cursor' : 'line cursor'" @click="activePosition(e, i)">{{e.show ? '取消定位' : '定位'}}</span>
-                <span class="line cursor" @click="lookDroneInfo(e, i)" title="查看无人机信息">查看</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+    </div>
+    <div class="manage" ref="manage">
+      <div class="arrow" @click="showNav">
+        <p v-if="isShow">&gt;</p>
+        <p v-else>&lt;</p>
       </div>
-      <el-dialog
-        :visible.sync="teamDialog"
-        center
-        :title="`账号名：${this.manager ? curSubaccounts.regname : ''}`"
-        :show-close="false"
-        @close="teamDialog = false"
-        :close-on-click-modal="false"
-        width="700px">
-        <div class="contains">
-          <ul class="tab clearfix">
-            <li
-              v-for="(tab, aindex) in tabs"
-              :key="tab.id"
-              @click="toggleTab(aindex, tab.view)"
-              :class="{active:active === aindex}">
-              {{tab.type}}
+      <div class="title">
+        <h3>应急无人机数据管理平台</h3>
+      </div>
+      <div class="drone-manage">
+        <div class="title">无人机管理</div>
+        <el-row class="mb10" v-if="manager">
+          <el-col :span="12">
+            <el-select v-model="selectVal" size="small" clearable @change="getAreaSearchAccountInfo">
+              <el-option
+                v-for="item in areas"
+                :key="item.id"
+                :label="item.area"
+                :value="item.area">
+              </el-option>
+            </el-select>
+          </el-col>
+        </el-row>
+        <el-row class="search" v-if="manager">
+          <el-col :span="12">
+            <el-input v-model="keyword" prefix-icon="el-icon-search" placeholder="请输入关键字" size="small" clearable></el-input>
+          </el-col>
+          <el-col :span="12">
+            <el-button size="small" @click="getAreaSearchAccountInfo">搜索</el-button>
+            <el-button size="small">重置</el-button>
+          </el-col>
+        </el-row>
+        <el-table
+          :data="subaccounts"
+          border
+          max-height="250"
+          class="table"
+          :row-style="{height: '26px'}"
+          :cell-style="{padding: '0'}"
+          style="width: 100%">
+          <el-table-column
+            prop="name"
+            label="账户"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            label="无人机数量"
+            align="center"
+            width="116">
+            <template slot-scope="scope">{{scope.row.drones | dronesNum}}</template>
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="操作"
+            align="center"
+            width="100">
+            <template slot-scope="scope">
+              <el-button @click="look(scope.$index, scope.row)" type="text" size="small">查看</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="inline">
+          <div class="title">在线无人机</div>
+          <ul>
+            <li v-for="(e, i) in inlineDrones" :key="e.id" class="clearfix">
+              <!-- <img :src="e.img" alt=""> -->
+              <!-- <img src="../../static/img/u17.jpg" alt="" class="line"> -->
+              <span class="line">{{i}}</span>
+              <span class="line account-name txt-hide" title="无人机名称">{{e.drone_name}}</span>
+              <!-- <span class="line team-name txt-hide" title="无人机所属团队">{{e.flyer_id | teamId(teams)}}</span> -->
+              <span :class="e.show ? 'active-posi line cursor' : 'line cursor'" @click="activePosition(e, i)" style="color: #25A5F7;">{{e.show ? '取消定位' : '定位'}}</span>
+              <span class="line cursor" @click="lookDroneInfo(e, i)" title="查看无人机信息">查看</span>
             </li>
           </ul>
-          <div class="team tabs" v-show="active === 0">
-            <div v-if="teamDialog">
-              <div class="team-item" v-for="(item, tIndex) in subaccounts[curIndex].team" :key="item.id">
-                <h3 class="team-title">团队名称：{{item.name}}</h3>
-                <h3 class="team-member">团队成员：</h3>
-                <ul class="member mb10">
-                  <li v-for="(e, index) in item.flyer" :key="e.id">
-                    <div>
-                      <img src="../../static/img/u195.png" alt=""
-                        @mouseover="showFlyerInfo(e, 1, index, tIndex)"
-                        @mouseleave="showFlyerInfo(e, 0, index, tIndex)">
-                    </div>
-                    <span>{{e.nickname}}</span>
-                    <ul class="pernson-info" v-show="e.show">
-                      <li>姓名：{{curFlyer.nickname}}</li>
-                      <li>电话：{{curFlyer.phone}}</li>
-                      <li>身份证：{{curFlyer.shenfenzheng}}</li>
-                      <li>年龄：{{curFlyer.year}}岁</li>
-                      <li>无人机驾龄：{{curFlyer.fly_year}}年</li>
-                      <li>
-                        飞行执照：
-                        <img :src="curFlyer.licence_img" alt="">
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div v-if="curTeamNum === 0">
-              <p>暂无团队</p>
-            </div>
-            </div>
-          <div class="device tabs" v-show="active !== 0">
-            <div v-if="teamDialog && curDevice !== 0">
-              <div v-for="item in subaccounts[curIndex].team" :key="item.id">
-                <h3 class="team-title">团队名称：{{item.name}}</h3>
-                <h3 class="team-member">团队无人机：</h3>
-                <ul class="member mb10">
-                  <li v-for="e in item.drone" :key="e.id">
-                    <div><img src="" alt="" @mouseover="e.show = true" @mouseleave="e.show = false"></div>
-                    <span>{{e.name}}</span>
-                    <ul class="pernson-info" v-show="e.show">
-                      <li>名称：{{e.name}}</li>
-                      <li>型号：{{e.type}}</li>
-                      <li>责任人：{{e.responsible}}</li>
-                      <li>设备配件：{{e.fitting}}</li>
-                      <li>设备价值：{{e.value}}</li>
-                      <li>第三方责任险：{{e.liability}}</li>
-                      <li>备注：{{e.remark}}</li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div v-if="curDevice === 0">
-              <p>暂无无人机设备</p>
+        </div>
+      </div>
+    </div>
+    <el-dialog
+      :visible.sync="teamDialog"
+      center
+      :title="`账号名：${this.manager ? curSubaccounts.regname : ''}`"
+      :show-close="false"
+      @close="teamDialog = false"
+      :close-on-click-modal="false"
+      width="700px">
+      <div class="contains">
+        <ul class="tab clearfix">
+          <li
+            v-for="(tab, aindex) in tabs"
+            :key="tab.id"
+            @click="toggleTab(aindex, tab.view)"
+            :class="{active:active === aindex}">
+            {{tab.type}}
+          </li>
+        </ul>
+        <div class="team tabs" v-show="active === 0">
+          <div v-if="teamDialog">
+            <div class="team-item" v-for="(item, tIndex) in subaccounts[curIndex].team" :key="item.id">
+              <h3 class="team-title">团队名称：{{item.name}}</h3>
+              <h3 class="team-member">团队成员：</h3>
+              <ul class="member mb10">
+                <li v-for="(e, index) in item.flyer" :key="e.id">
+                  <div>
+                    <img src="../../static/img/u195.png" alt=""
+                      @mouseover="showFlyerInfo(e, 1, index, tIndex)"
+                      @mouseleave="showFlyerInfo(e, 0, index, tIndex)">
+                  </div>
+                  <span>{{e.nickname}}</span>
+                  <ul class="pernson-info" v-show="e.show">
+                    <li>姓名：{{curFlyer.nickname}}</li>
+                    <li>电话：{{curFlyer.phone}}</li>
+                    <li>身份证：{{curFlyer.shenfenzheng}}</li>
+                    <li>年龄：{{curFlyer.year}}岁</li>
+                    <li>无人机驾龄：{{curFlyer.fly_year}}年</li>
+                    <li>
+                      飞行执照：
+                      <img :src="curFlyer.licence_img" alt="">
+                    </li>
+                  </ul>
+                </li>
+              </ul>
             </div>
           </div>
+          <div v-if="curTeamNum === 0">
+            <p>暂无团队</p>
+          </div>
+          </div>
+        <div class="device tabs" v-show="active !== 0">
+          <div v-if="teamDialog">
+            <div>
+              <!-- <h3 class="team-title">团队名称：{{list.name}}</h3> -->
+              <!-- <h3 class="team-member">团队无人机：</h3> -->
+              <ul class="member mb10">
+                <li v-for="(list, tIndex) in subaccounts[curIndex].drone" :key="list.id">
+                  <div style="">
+                    <img src="../../static/img/u229.png" alt="" @mouseover="showDronesInfo(list, 1, tIndex)" @mouseleave="showDronesInfo(list, 0, tIndex)">
+                  </div>
+                  <span>{{list.name}}</span>
+                  <ul class="pernson-info" v-show="list.show">
+                    <li>名称：{{curDrone.name}}</li>
+                    <li>型号：{{curDrone.model}}</li>
+                    <li>责任人：{{curDrone.reponsible_people}}</li>
+                    <li>设备配件：{{curDrone.parts}}</li>
+                    <li>设备价值：{{curDrone.value}}</li>
+                    <li>第三方责任险：{{list.insurance}}</li>
+                    <li>备注：{{curDrone.notes}}</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- <div v-if="curDevice === 0">
+            <p>暂无无人机设备</p>
+          </div> -->
         </div>
-        <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="closeInfo">关  闭</el-button>
-        </span>
-      </el-dialog>
-      <div class="drone-info" v-show="isShowDroneInfo">
-        <h3>无人机名称<span class="close-info" @click="isShowDroneInfo = false">×</span></h3>
-        <div class="clearfix marbtom">
-          <div class="dislines gfl">{{activeDroneInfo.drone_name ? activeDroneInfo.drone_name : ''}}</div>
-        </div>
-        <h3>所属团队</h3>
-        <div class="clearfix marbtom">
-          <div class="dislines gfl">{{activeDroneInfo.team_name ? activeDroneInfo.team_name : ''}}</div>
-        </div>
-        <h3>飞行信息</h3>
-        <div class="clearfix marbtom">
-          <div class="dislines gfl">经度：{{activeDroneInfo.longtitude ? activeDroneInfo.longtitude.toFixed(8) : 0}}</div><div class="dislines gfr">纬度：{{activeDroneInfo.latitude ? activeDroneInfo.latitude.toFixed(8) : 0}}</div>
-          <div class="dislines gfl">速度：{{activeDroneInfo.speed ? activeDroneInfo.speed : 0}}m/s</div><div class="dislines gfr">高度：{{activeDroneInfo.height ? activeDroneInfo.height : 0}}m</div>
-          <div class="dislines gfl">俯仰角：{{activeDroneInfo.pitch ? activeDroneInfo.pitch.toFixed(2) : 0}}°</div><div class="dislines gfr">横滚角：{{activeDroneInfo.roll ? activeDroneInfo.roll.toFixed(2) : 0}}°</div>
-          <div class="dislines gfl">航向角：{{activeDroneInfo.yaw ? activeDroneInfo.yaw.toFixed(2) : 0}}°</div><div class="dislines gfr"></div>
-        </div>
-        <h3>遥控器</h3>
-        <div class="clearfix marbtom">
-          <div class="dislines gfl">遥控器信号：{{activeDroneInfo.remote_signal ? activeDroneInfo.remote_signal : ''}}%</div><div class="dislines gfr">遥控器电量：{{activeDroneInfo.remote_charge ? activeDroneInfo.remote_charge : 0}}%</div>
-        </div>
-        <h3>电池</h3>
-        <div class="clearfix marbtom">
-          <div class="dislines gfl">飞机电量：{{activeDroneInfo.drone_charge ? activeDroneInfo.drone_charge : 0}}%</div><div class="dislines gfr">电压：{{activeDroneInfo.drone_voltage ? activeDroneInfo.drone_voltage : 0}}mv</div>
-          <div class="dislines gfl">电池流：{{activeDroneInfo.drone_current ? activeDroneInfo.drone_current : 0}}mA</div><div class="dislines gfr"></div>
-        </div>
-        <h3>图传</h3>
-        <div class="clearfix marbtom">
-          <div class="gfl picture_bandwidth">图传信号：{{activeDroneInfo.picture_bandwidth ? activeDroneInfo.picture_bandwidth : 0}}</div>
-        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="closeInfo">关  闭</el-button>
+      </span>
+    </el-dialog>
+    <div class="drone-info" v-show="isShowDroneInfo">
+      <h3>无人机名称<span class="close-info" @click="isShowDroneInfo = false">×</span></h3>
+      <div class="clearfix marbtom">
+        <div class="dislines gfl">{{activeDroneInfo.drone_name ? activeDroneInfo.drone_name : ''}}</div>
+      </div>
+      <h3>所属团队</h3>
+      <div class="clearfix marbtom">
+        <div class="dislines gfl">{{activeDroneInfo.team_name ? activeDroneInfo.team_name : ''}}</div>
+      </div>
+      <h3>飞行信息</h3>
+      <div class="clearfix marbtom">
+        <div class="dislines gfl">经度：{{activeDroneInfo.longtitude ? activeDroneInfo.longtitude.toFixed(8) : 0}}</div><div class="dislines gfr">纬度：{{activeDroneInfo.latitude ? activeDroneInfo.latitude.toFixed(8) : 0}}</div>
+        <div class="dislines gfl">速度：{{activeDroneInfo.speed ? activeDroneInfo.speed : 0}}m/s</div><div class="dislines gfr">高度：{{activeDroneInfo.height ? activeDroneInfo.height : 0}}m</div>
+        <div class="dislines gfl">俯仰角：{{activeDroneInfo.pitch ? activeDroneInfo.pitch.toFixed(2) : 0}}°</div><div class="dislines gfr">横滚角：{{activeDroneInfo.roll ? activeDroneInfo.roll.toFixed(2) : 0}}°</div>
+        <div class="dislines gfl">航向角：{{activeDroneInfo.yaw ? activeDroneInfo.yaw.toFixed(2) : 0}}°</div><div class="dislines gfr"></div>
+      </div>
+      <h3>遥控器</h3>
+      <div class="clearfix marbtom">
+        <div class="dislines gfl">遥控器信号：{{activeDroneInfo.remote_signal ? activeDroneInfo.remote_signal : ''}}%</div><div class="dislines gfr">遥控器电量：{{activeDroneInfo.remote_charge ? activeDroneInfo.remote_charge : 0}}%</div>
+      </div>
+      <h3>电池</h3>
+      <div class="clearfix marbtom">
+        <div class="dislines gfl">飞机电量：{{activeDroneInfo.drone_charge ? activeDroneInfo.drone_charge : 0}}%</div><div class="dislines gfr">电压：{{activeDroneInfo.drone_voltage ? activeDroneInfo.drone_voltage : 0}}mv</div>
+        <div class="dislines gfl">电池流：{{activeDroneInfo.drone_current ? activeDroneInfo.drone_current : 0}}mA</div><div class="dislines gfr"></div>
+      </div>
+      <h3>图传</h3>
+      <div class="clearfix marbtom">
+        <div class="gfl picture_bandwidth">图传信号：{{activeDroneInfo.picture_bandwidth ? activeDroneInfo.picture_bandwidth : 0}}</div>
       </div>
     </div>
   </div>
@@ -216,6 +216,7 @@ export default {
       drones: [], // 无人机设备
       droneInfo: [], // 无人机信息
       subaccounts: [], // 子账户信息
+      allDrones: [], // 所有无人机
       curSubaccounts: {},
       curIndex: '',
       curTeamNum: 0, // 当前团队数量
@@ -227,6 +228,15 @@ export default {
         year: '',
         fly_year: '',
         licence_img: ''
+      },
+      curDrone: {
+        name: '',
+        reponsible_people: '',
+        model: '',
+        value: '',
+        parts: '',
+        insurance: '',
+        notes: ''
       },
       map: null,
       layer: false, // 卫星图层是否开启
@@ -303,6 +313,7 @@ export default {
         params: this.params
       }).then(res => {
         if (res.Status === 0) {
+          this.allDrones = res.Data.drones
           if (this.manager) {
             this.managerInfo = res.Data
             let flyers = res.Data.flyers
@@ -512,7 +523,18 @@ export default {
       } else {
         this.curTeamNum = (this.subaccounts[this.curIndex].teams.replace(/(\[)|(\])/g, '')).split(',').length
       }
-      console.log(this.subaccounts)
+      this.subaccounts.forEach(e => e.drone = [])
+      this.allDrones.forEach(e => e.show = false)
+      this.subaccounts.forEach(e => {
+        (e.drones.replace(/(\[)|(\])/g, '')).split(',').forEach(item => {
+          this.allDrones.forEach(drone => {
+            if (item*1 === drone.id) {
+              e.drone.push(drone)
+            }
+          })
+        })
+      })
+      // console.log(this.subaccounts[this.curIndex].drone)
       // if (this.subaccounts[this.curIndex].teams === '[]') {
       //   this.curDevice = 0
       // } else {
@@ -523,7 +545,7 @@ export default {
     },
     toggleTab (index, item) {
       this.active = index
-      this.currentView = item
+      this.currentView = item // this.curDevice
     },
     showFlyerInfo (item, num, index, tIndex) { // 是否显示飞手信息(item是否显示，num移入1移出0，index当前飞手序号，tIndex当前团队序号)
       this.$forceUpdate() // 解决动态改变数据后渲染的很慢或者不渲染
@@ -539,6 +561,24 @@ export default {
       } else {
         for (let key in this.curFlyer) {
           this.curFlyer[key] = ''
+        }
+      }
+    },
+    showDronesInfo (item, num, tIndex) { // 是否显示无人机信息
+      this.$forceUpdate() // 解决动态改变数据后渲染的很慢或者不渲染
+      item.show = num === 0 ? false : true
+      if (num === 1) {
+        let drone = this.subaccounts[this.curIndex].drone[tIndex]
+        this.curDrone.name = drone.name
+        this.curDrone.reponsible_people = drone.reponsible_people
+        this.curDrone.model = drone.model
+        this.curDrone.value = drone.value
+        this.curDrone.parts = drone.parts
+        this.curDrone.insurance = drone.insurance
+        this.curDrone.notes = drone.notes
+      } else {
+        for (let key in this.curDrone) {
+          this.curDrone[key] = ''
         }
       }
     },
@@ -617,9 +657,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container{
+.home{
   position: relative;
-  // overflow: hidden;
+  height: 857px;
   .drone-info{
     position: absolute;
     top: 56px;
@@ -658,7 +698,7 @@ export default {
 }
 .map{
   width: 100%;
-  height: 857px;
+  height: 100%;
 }
 .layer{
   position: absolute;
@@ -690,6 +730,7 @@ export default {
   padding: 24px 16px 16px;
   width: 420px;
   border: 1px solid #000;
+  border-right: none;
   background-color: #fff;
   z-index: 999;
   .arrow{
@@ -715,7 +756,6 @@ export default {
     font-size: 0;
     margin-bottom: 16px;
     h3{
-      display: inline-block;
       text-align: center;
       line-height: 50px;
       font-size: 26px;
@@ -807,7 +847,6 @@ export default {
   }
 }
 .device{
-  height: 140px;
   li{
     float: left;
     position: relative;
@@ -821,7 +860,7 @@ export default {
       display: inline-block;
       width: 90px;
       height: 90px;
-      border: 1px solid #000;
+      border: 1px solid #333;
       border-radius: 50%;
     }
   }
