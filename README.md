@@ -47,3 +47,12 @@ alias: {
 src/excel:
 Blob.js
 export2Excel.js
+
+# git
+git config --global user.name "lxf"
+git config --global user.email "1399078386@qq.com"
+git init
+git add .
+git commit -m '提交信息'
+git remote add origin git@github.com:JavaScript7/drone.git // 连接到到远程仓库地址
+git push origin master // 推送
