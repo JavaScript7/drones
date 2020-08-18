@@ -7,7 +7,7 @@
       <div class="padding">
         <ul>
           <li v-for="e in droneInfo" :key="e.id" class="drone">
-            <img src="http://www4.djicdn.com/cms/uploads/19b4fb106eee1bbdb80fe51915c9f2a6.png" alt="" @mouseover="e.show = true" @mouseleave="e.show = false">
+            <img src="http://www4.djicdn.com/cms/uploads/19b4fb106eee1bbdb80fe51915c9f2a6.png" alt="" @click="e.show = !e.show">
             <div class="del-drone">
               <span class="iconfont icon-iconfontshanchu5" @click="delDrone(e.id)"></span>
             </div>
@@ -17,7 +17,7 @@
               <li><span>型号：</span>{{e.model}}</li>
               <li><span>责任人：</span>{{e.reponsible_people}}</li>
               <li><span>设备配件：</span>{{e.parts}}</li>
-              <li><span>设备价值：</span>{{e.value}}</li>
+              <li><span>设备价值：</span>{{e.value}} 元</li>
               <li><span>第三方责任险：</span>{{e.insurance}}</li>
               <li><span>备注：</span>{{e.notes}}</li>
             </ul>
@@ -32,7 +32,7 @@
       :visible.sync="isAddDrone"
       :show-close="false"
       :close-on-click-modal="false"
-      width="780px"
+      width="790px"
       center>
       <el-form :inline="true" ref="ruleForm" :model="drone" :rules="rules" :label-position="'right'" class="mb40">
         <el-form-item label="名称：" label-width="120px" prop="name">
@@ -86,6 +86,7 @@ export default {
       show: false,
       isAddDrone: false,
       flyers: [], // 有团队的飞手
+      allDroneInfos: [],
       droneInfo: [],
       drone: {
         djId: '',
@@ -111,7 +112,8 @@ export default {
           {required: true, message: '请输入责任人', trigger: 'blur'}
         ],
         value: [
-          {required: true, message: '请输入无人机价值', trigger: 'blur'}
+          {required: true, message: '请输入无人机的价值', trigger: 'blur'},
+          {type: 'number', message: '无人机的价值必须为数字'}
         ],
         fitting: [
           {required: true, message: '请输入无人机配件', trigger: 'blur'}
@@ -125,18 +127,25 @@ export default {
   },
   created () {},
   mounted () {
-    this.getDrones(this.curSubaccount)
+    this.getDrones(false)
     if (this.manager) {
       // this.getTeamInfo()
     } else {
       this.getCurAccountFlyers()
     }
     this.$bus.$on('searchCurTeam', id => {
-      this.curSubaccount = id
-      this.getDrones(this.curSubaccount)
+      this.droneInit(this.$store.state.curSubaccountId)
     })
   },
-  watch: {},
+  watch: {
+    'drone.value': function(val){ // 监听的无人机价值只能为数字
+      if (!val) {
+        this.drone.value = ''
+        return false
+      }
+      this.drone.value = val.match(/\d/ig) ? val.match(/\d/ig).join('') : ''
+    }
+  },
   computed: {
     manager () { // 管理者显示添加账户非管理者隐藏添加账户
       return this.$store.state.userInfo.type === 'manager' ? true : false
@@ -155,11 +164,12 @@ export default {
         params: this.params
       }).then(res => {
         if (res.Status === 0) {
+          this.$store.commit('GET_SUBACCOUNTS', res.Data.subaccount)
           if (!id) {
             res.Data.drones.forEach(e => e.show = false)
-            this.droneInfo = res.Data.drones
+            this.allDroneInfos = res.Data.drones
           } else if (this.manager && id) {
-            this.droneInfo = []
+            this.allDroneInfos = []
             let arr = []
             res.Data.subaccount.forEach(e => {
               if (e.id === id) {
@@ -171,14 +181,28 @@ export default {
             res.Data.drones.forEach(e => {
               arr.forEach(item => {
                 if (e.id === item*1) {
-                  this.droneInfo.push(e)
+                  this.allDroneInfos.push(e)
                 }
               })
             })
-            this.droneInfo.forEach(e => e.show = false)
+            this.allDroneInfos.forEach(e => e.show = false)
           } else {
-            this.droneInfo = []
+            this.allDroneInfos = []
           }
+          if (!this.manager) {
+            res.Data.drones.forEach(e => e.show = false)
+            this.droneInfo = res.Data.drones
+          } else {
+            this.droneInit(this.$store.state.curSubaccountId)
+          }
+        }
+      })
+    },
+    droneInit (subId) {
+      this.droneInfo = []
+      this.allDroneInfos.forEach(e => {
+        if (e.add_id === subId) {
+          this.droneInfo.push(e)
         }
       })
     },
@@ -218,7 +242,7 @@ export default {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           let data = {
-            // dj_id: this.drone.djId,
+            dj_id: this.drone.djId,
             insurance: this.drone.insurance,
             manager_id: this.$store.state.userInfo.ID,
             model: this.drone.model,
@@ -322,7 +346,7 @@ export default {
             top: 80px;
             left: 80px;
             padding: 0;
-            border: 1px solid #000;
+            border: 1px solid #999;
             background: #fff;
             z-index: 999;
             li{

@@ -127,8 +127,8 @@ button{
   border-color: #797979 !important;
 }
 .textarea .el-form-item__content{
-  width: 830px;
-  height: 60px;
+  width: 824px;
+  height: 72px;
 }
 .textarea .el-textarea__inner{
   height: 70px;
@@ -173,6 +173,9 @@ li.el-submenu{
 }
 .fight-log .el-dialog__close{
   color: #fff !important;
+}
+.drone .el-form-item__content .el-textarea{
+  width: 218px;
 }
 .shadow{
   box-shadow: 0 2px 6px 0 rgba(22, 50, 102, .2);

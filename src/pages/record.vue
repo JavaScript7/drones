@@ -93,8 +93,13 @@ export default {
         }
       }).then(res => {
         if (res.Status === 0) {
-          this.logs = res.Data.logs
-          this.pagination.total = res.Data.count
+          if (res.Data.count) {
+            this.pagination.total = res.Data.count
+            this.logs = res.Data.logs
+          } else {
+            this.pagination.total = 0
+            this.logs = []
+          }
         } else {
           this.$message.error(res.Msg)
         }

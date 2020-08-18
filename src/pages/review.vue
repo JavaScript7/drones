@@ -120,11 +120,12 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="pagination.currentPage"
-        layout="prev, pager, next, jumper"
+        :current-page="pagination.curPage"
+        :page-sizes="[10, 15, 20]"
+        :page-size="pagination.size"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="pagination.total">
       </el-pagination>
-      <div class="page-sum">共 {{Math.ceil(pagination.total/10)}} 页</div>
     </div>
     <!-- 查看 -->
     <el-dialog
@@ -388,8 +389,9 @@ export default {
       }],
       missionLists: [],
       pagination: {
-        currentPage: 0,
-        total: 0
+        curPage: 1,
+        total: 0,
+        size: 10
       },
       lookDialog: false,
       editDialog: false,
@@ -417,7 +419,7 @@ export default {
   },
   mounted () {
     this.missionLists = this.tableData
-    this.getTasks()
+    this.getTasks(this.pagination.curPage, this.pagination.size)
     if (this.manager) {
       this.getAllRoles()
       this.getSubaccount()
@@ -490,20 +492,26 @@ export default {
         }
       })
     },
-    getTasks () { // 管理员或者子账号查询任务
+    getTasks (val, size) { // 管理员或者子账号查询任务
       let url = ''
       url = this.manager ? this.api.tasks : this.api.subaccountTask
       this.$axios.get(url, {
         params: {
           id: this.$store.state.userInfo.ID,
           token: this.$store.state.userInfo.SocketToken,
-          limit: 10,
-          offset: this.pagination.currentPage * 1
+          limit: size,
+          // offset: this.pagination.curPage * 1
+          offset: val -1
         }
       }).then(res => {
         if (res.Status === 0) {
-          this.pagination.total = res.Data.count
-          this.taskInfo = res.Data.tasks
+          if (res.Data.count) {
+            this.pagination.total = res.Data.count
+            this.taskInfo = res.Data.tasks
+          } else {
+            this.pagination.total = 0
+            this.taskInfo = []
+          }
         } else {
           this.$message.error(res.Msg)
         }
@@ -515,7 +523,7 @@ export default {
           id: this.$store.state.userInfo.ID,
           token: this.$store.state.userInfo.SocketToken,
           limit: 10,
-          offset: this.pagination.currentPage * 1
+          offset: this.pagination.curPage * 1
         }
       }).then(res => {
         if (res.Status === 0) {
@@ -578,7 +586,7 @@ export default {
         params: this.params
       }).then(res => {
         if (res.Status === 0) {
-          this.getTasks()
+          this.getTasks(this.pagination.curPage, this.pagination.size)
           this.lookDialog = false
           this.$message.success('更新任务成功')
         } else {
@@ -876,7 +884,7 @@ export default {
         params: this.params
       }).then(res => {
         if (res.Status === 0) {
-          this.getTasks()
+          this.getTasks(this.pagination.curPage, this.pagination.size)
           this.$message.success('删除任务成功！')
           this.delDialog = false
         } else {
@@ -884,11 +892,15 @@ export default {
         }
       })
     },
-    handleSizeChange (val) {
+    handleSizeChange (size) {
       // console.log(`每页 ${val} 条`)
+      this.pagination.size = size
+      this.getTasks(this.pagination.curPage, this.pagination.size)
     },
     handleCurrentChange (val) {
       // console.log(`当前页: ${val}`)
+      this.pagination.curPage = val
+      this.getTasks(this.pagination.curPage, this.pagination.size)
     },
     handleRemove (file, fileList) {
       // console.log(file, fileList)

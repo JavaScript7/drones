@@ -2,7 +2,7 @@
   <div class="picture">
     <div class="content">
       <el-form :inline="true" :model="form" class="form">
-        <el-form-item label="选择时间:">
+        <!-- <el-form-item label="选择时间:">
           <el-date-picker
             v-model="form.time"
             type="daterange"
@@ -22,45 +22,28 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSearch">查询</el-button>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
-          <el-button type="primary" icon="el-icon-upload2" class="upload-file" @click="isUploadPic = true">
+          <el-button type="primary" icon="el-icon-upload2" class="upload-file" @click="openOpload">
             上传
             <!-- <input type="file" id="file" name="file" class="upload-files" ref="uploadFile" @change="uploadFile($event)" /> -->
           </el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" @click="newAddFolder">新建文件夹</el-button>
+          <el-button type="primary" @click="newAddFolder" v-show="!curPath">新建文件夹</el-button>
         </el-form-item>
       </el-form>
-      <ul class="QAfdwP tvPMvPb path-list">
+      <ul class="box path-list">
         <li v-show="isPicture">全部文件</li>
-        <!-- <li>{{curPath}}</li> -->
         <li v-show="!isPicture" class="goback" @click="goBackPrevious">返回上一级</li>
+        <li v-show="!isPicture" style="padding: 0 4px;">|</li>
+        <li v-show="!isPicture">{{curPath}}</li>
       </ul>
-      <ul v-loading="loading">
-        <li v-show="isPicture">
-          <div class="file-type dir-small disline"></div>
-          <span class="disline" style="height: 26px;line-height: 26px;cursor: pointer;margin-left: 10px;" @click="openPicture">默认文件夹</span>
-          <!-- <img src="https://zfqz.meiyafly.com/resources/tasks/18j9sadd2h1/DJI_0008.JPG" alt="" style="display: block;width: 120px;height: 40px;margin-left: 40px;"> -->
-          <!-- <div class="pict" style="margin-left: 40px;">DJI_0008.JPG</div> -->
-        </li>
-        <li v-show="!isPicture">
-          <div style="margin-bottom: 14px;">
-            <div class="file-type pic-small disline"></div>
-            <span class="disline" style="height: 26px;line-height: 26px;cursor: pointer;" @click="openPictureShow('https://zfqz.meiyafly.com/resources/tasks/18j9sadd2h1/DJI_0008.JPG')">DJI_0008.JPG</span>
-          </div>
-          <div>
-            <div class="file-type pic-small disline"></div>
-            <span class="disline" style="height: 26px;line-height: 26px;cursor: pointer;" @click="openPictureShow('https://zfqz.meiyafly.com/resources/tasks/18j9sadd2h1/DJI_0053.JPG')">DJI_0053.JPG</span>
-          </div>
-        </li>
-      </ul>
-      <!-- <div class="file-box" v-if="!curPathShow">
+      <div class="file-box" v-if="!curPathShow" v-loading="listLoading">
         <dd class="g-clearfix file-dd open-enable"
           v-for="e in files" :key="e.id">
           <div style="height: 44px;line-height: 44px;">
-            <div class="file-type dir-small" v-if="e.type === 'file'"></div>
+            <div class="file-type dir-small"></div>
             <a href="javascript:void(0);" class="txt" v-show="!e.show" @click="getCurSubAcccountPath(e.path)">{{e.path}}</a>
             <input type="text" class="change-name" v-if="e.type === 'file'" v-show="e.show" v-model="e.path">
             <img class="img disline" v-if="e.type === 'pic'" :src="e.url" alt="">
@@ -71,19 +54,20 @@
             <span class="file-del iconfont icon-iconfontshanchu5" title="删除" @click="delFile(e.id)"></span>
           </div>
         </dd>
-      </div> -->
-      <!-- <div class="file-ff" v-else>
+      </div>
+      <div class="file-ff" v-else>
         <dd class="g-clearfix file-dd open-enable"
-          v-for="e in files" :key="e.id">
-          <div style="height: 44px;line-height: 44px;">
-            <input type="checkbox" v-if="e.type === 'file'">
-            <div class="file-type dir-small" v-if="e.type === 'file'"></div>
-            <a href="javascript:void(0);" class="txt" v-show="!e.show" @click="getCurSubAcccountPath(e.path)">{{e.path}}</a>
-            <input type="text" class="change-name" v-if="e.type === 'file'" v-show="e.show" v-model="e.path">
-            <img class="img disline" v-if="e.type === 'pic'" :src="e.url" alt="">
+          v-for="imgItem in curPathData" :key="imgItem.id">
+          <div style="height: 44px;line-height: 44px;padding-left: 36px;">
+            <!-- <input type="checkbox" v-if="imgItem.type === 'file'"> -->
+            <div class="file-type pic-small disline"></div>
+            <a href="javascript:void(0);" class="txt" @click="openPictureShow(imgItem.url)">{{imgItem.name}}</a>
+            <input type="text" class="change-name" v-if="imgItem.type === 'file'" v-show="imgItem.show" v-model="imgItem.path">
+            <!-- <img class="img disline" :src="imgItem.url" alt=""> -->
+            <!-- <span class="file-del iconfont icon-iconfontshanchu5" title="下载" @click="delFile(e.id)"></span> -->
           </div>
         </dd>
-      </div> -->
+      </div>
       <div>
       <!-- <ul>
         <li v-for="e in imgLists" :key="e.id">
@@ -140,9 +124,9 @@
             :picker-options="pickerOptions">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="上传文件目录" label-width="120px">
+        <!-- <el-form-item label="上传文件目录" label-width="120px">
           <el-input placeholder="请输入上传文件目录" v-model="uploadPic.name"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="选择文件" label-width="120px">
           <el-button type="primary" class="upload-file" @click="confirmDelUpload">
           选择文件
@@ -150,9 +134,9 @@
         </el-button>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
+      <!-- <span slot="footer" class="dialog-footer">
         <el-button @click="cancelUploadFile">关 闭</el-button>
-      </span>
+      </span> -->
     </el-dialog>
     <el-dialog
       title="删除文件"
@@ -176,6 +160,7 @@ export default {
   data () {
     return {
       isPicture: true,
+      listLoading: false,
       loading: false,
       form: {
         time: '',
@@ -194,6 +179,7 @@ export default {
       allPath: [], // 所有目录
       curPath: '', // 当前目录名称
       curPathShow: false, // 显示当前目录
+      curPathData: [], // 当前目录下的文件
       members: [
         {id: 0, value: '飞手1'},
         {id: 1, value: '飞手2'},
@@ -249,8 +235,8 @@ export default {
   mounted () {
     // this.getFilePath()
     this.getAllFilePath()
-    console.log(this.curAccount)
-    console.log(this.myName)
+    // console.log(this.curAccount)
+    // console.log(this.myName)
   },
   watch: {
     selectAccount (val) {
@@ -308,15 +294,22 @@ export default {
         }
       })
     },
+    openOpload () { // 开启上传文件
+      if (this.curPath) {
+        this.isUploadPic = true
+      } else {
+        this.$message.error('请先选择上传的文件目录')
+      }
+    },
     uploadFile (e) { // 2020-5-5 飞手1
       let file = e.target.files[0]
       this.$axios.get(this.api.aliOssUrl).then(res => {
         let filename = new Date().getTime() + file.name
-        console.log(file)
-        return false
+        // console.log(file)
+        // return false
         let form = new FormData()
         form.append('name', file.name)
-        form.append('key', '图片/' + this.uploadPic.time + ' ' + this.uploadPic.name)
+        form.append('key', this.curPath + '/' + this.uploadPic.time)
         form.append('policy', res.policy)
         form.append('OSSAccessKeyId', res.accessid)
         form.append('success_action_status', 200)
@@ -326,6 +319,7 @@ export default {
         this.$axios.post(res.host, form).then(res => {
           if (res.Status === 'OK') {
             this.cancelUploadFile()
+            this.getFilePath(this.curPath)
             this.$message.success('上传成功！')
           } else {
             this.$message.error(res.Msg)
@@ -351,37 +345,45 @@ export default {
           this.files = res.Data.filter(e => {
             return e.parent === 0
           })
-          console.log(this.files)
+          // console.log(this.files)
         } else {
           this.$message.error(res.Msg)
         }
       })
     },
     getCurSubAcccountPath (path) {
-      this.curPath = path
-      this.curPathShow = false
-      console.log(this.curPath)
-      console.log(this.allPath)
+      this.listLoading = true
+      this.getFilePath(path)
+      setTimeout(() => {
+        this.curPath = path
+        this.curPathShow = true
+        this.isPicture = false
+        this.listLoading = false
+      }, 700)
     },
-    getFilePath () { // 获取目录"图片"路径下的所文件
-      let data = {
-        path: '图片'
-      }
-      this.$axios.post(this.api.ossPathFile, data, {
+    getFilePath (path) { // 获取当前目录路径下的所文件
+      this.$axios.post(this.api.ossPathFile, { path }, {
         params: this.params
       }).then(res => {
         if (res.Status === 0) {
           res.Data.forEach(e => e.show = false)
-          this.files = res.Data
-          console.log(res.Data)
+          this.files.forEach(e => e.data = [])
+          // this.files.forEach(e => e.type = 'pic')
+          // this.files.forEach(e => {
+          //   if (e.path === path) {
+          //     e.data = res.Data
+          //   }
+          // })
+          this.curPathData = res.Data
         } else {
           this.$message.error(res.Msg)
         }
       })
     },
     newAddFolder () { // 启动新建文件夹
+      let lastId = this.files.length === 0 ? 1 : this.files[this.files.length - 1].id + 1
       if (this.addFlag) {
-        this.files.push({id: 1111, name: '', show: true, type: 'file'})
+        this.files.push({id: lastId, name: '', show: true, type: 'file'})
         this.$nextTick(() => {
           let input = document.querySelectorAll('.change-name')
           let len = input.length - 1
@@ -396,16 +398,18 @@ export default {
     confirmAddFile (e) { // 确认新建文件夹
       let data = {
         parent: 0,
-        path: e.name,
+        path: e.path,
         user_id: this.$store.state.userInfo.ID
       }
-      return false
       this.$axios.post(this.api.ossFileCreate, data, {
         params: this.params
       }).then(res => {
         if (res.Status === 0) {
+          this.getAllFilePath()
           e.show = false
           this.addFlag = true
+        } else {
+          this.$message.error(res.Msg)
         }
       })
     },
@@ -416,7 +420,7 @@ export default {
       }
       this.addFlag = true
     },
-    changeName (e) {
+    changeName (e) { // 更改文件夹名称
       e.show = e.type === 'file' ? true : false
       if (e.type === 'file') {
         // e.show = true
@@ -431,8 +435,9 @@ export default {
       setTimeout(() => {
         this.loading = false
         this.isPicture = true
+        this.curPathShow = false
+        this.curPath = ''
       }, 500)
-      // this.isAllFile = !this.isAllFile
     },
     onSearch () {},
     ZoomImg (url) {
@@ -484,6 +489,8 @@ export default {
         params: this.params
       }).then(res => {
         if (res.Status === 0) {
+          this.getAllFilePath()
+          this.isDelFile = false
           this.$message.success('删除成功！')
         } else {
           this.$message.error(res.Msg)
@@ -546,7 +553,7 @@ export default {
   }
 }
 
-.tvPMvPb{
+.box{
   border-top-color: #fff;
   height: 36px;
   line-height: 36px;
@@ -560,6 +567,11 @@ export default {
     &:hover{
       cursor: pointer;
     }
+  }
+}
+.path-list{
+  li{
+    float: left;
   }
 }
 .file-box{
@@ -578,7 +590,7 @@ export default {
       cursor: pointer;
     }
     .file-del{
-      margin-left: 600px;
+      margin-left: 348px;
       color: #409EFF;
     }
   }
@@ -661,14 +673,14 @@ export default {
   width: 26px;
   height: 26px;
   vertical-align: middle;
-  background: url(https://pan.baidu.com/box-static/file-widget-1/sysIcon/img/Folder_24_35f88d9.png?__sprite) center no-repeat;
+  background: url(../../static/img/file.png) center no-repeat;
   // background: url(https://pan.baidu.com/box-static/file-widget-1/common/Picture_24_942ff50.png?__sprite) center no-repeat;
   // background: url(https://pan.baidu.com/box-static/file-widget-1/common/Video_24_94bee9e.png?__sprite) center no-repeat;
 }
 .pic-small{
   width: 26px;
   height: 26px;
-  vertical-align: bottom;
-  background: url(https://pan.baidu.com/box-static/file-widget-1/common/Picture_24_942ff50.png?__sprite) center no-repeat;
+  vertical-align: middle;
+  background: url(../../static/img/picture.png) center no-repeat;
 }
 </style>

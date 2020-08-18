@@ -1,13 +1,13 @@
 <template>
   <div class="team">
     <div class="sidebar" v-if="auth">
-      <div class="title" @click="searchCurTeamF(false, -1)">账户</div>
+      <div class="title">账户</div>
       <div class="account-info">
         <ul>
           <li
             v-for="(e, i) in accounts"
             :key="e.id"
-            :class="i === activeSubaccount ? 'active-sub' : ''">
+            :class="i === curSubaccountIndex ? 'active-sub' : ''">
             <span class="search-team disline" @click="showAccountInfo(e.id)">
               <img class="avator" src="https://www.amap.com/assets/img/defavatar.png" alt="">
             </span>
@@ -21,7 +21,7 @@
       <ul>
         <router-link to="/memberManage" tag="li" :class="$route.path === '/memberManage' ? 'active' : ''">成员管理</router-link>
         <router-link to="/deviceDetail" tag="li" :class="$route.path === '/deviceDetail' ? 'active' : ''">设备管理</router-link>
-        <router-link to="/authManage" tag="li" :class="$route.path === '/authManage' ? 'active' : ''">权限设置</router-link>
+        <!-- <router-link to="/authManage" tag="li" :class="$route.path === '/authManage' ? 'active' : ''">权限设置</router-link> -->
       </ul>
       <div class="content">
         <router-view></router-view>
@@ -127,7 +127,6 @@ export default {
         regname: '',
         area: ''
       },
-      activeSubaccount: -1, // 当前账户，默认-1是管理员账户
       addAccountDialog: false,
       account: {
         name: '',
@@ -151,7 +150,7 @@ export default {
   watch: {
     '$route': function(newVal) {
       if (newVal.name === 'memberManage' || newVal.name === 'deviceDetail') {
-        this.activeSubaccount = -1
+        // this.curSubaccountIndex = 0
       }
     }
   },
@@ -167,6 +166,9 @@ export default {
         id: this.$store.state.userInfo.ID,
         token: this.$store.state.userInfo.SocketToken
       }
+    },
+    curSubaccountIndex () {
+      return this.$store.state.curSubaccountIndex
     }
   },
   methods: {
@@ -176,6 +178,7 @@ export default {
       }).then(res => {
         if (res.Status === 0) {
           this.accounts = res.Data
+          this.$store.commit('GET_CUR_SUBACCOUNT_ID', this.accounts[0].id)
           this.$bus.$emit('account', this.accounts)
         } else {
           this.$message.error(res.Msg)
@@ -290,7 +293,8 @@ export default {
       })
     },
     searchCurTeamF (id, index) { // 查看当前团队
-      this.activeSubaccount = index
+      this.$store.commit('CHANGE_SUBACCPUNT', index)
+      this.$store.commit('GET_CUR_SUBACCOUNT_ID', this.accounts[this.curSubaccountIndex].id)
       this.$bus.$emit('searchCurTeam', id)
     }
   }

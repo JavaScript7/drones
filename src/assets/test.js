@@ -394,12 +394,5 @@
   // }
   // console.log(obj)
 }{
-  let tem = '1596839386'
-  let date = new Date(tem * 1000)
-  let year = date.getFullYear()
-  let num = 11
-  if (num < 10) {
-    num = '0' + num
-  }
-  console.log(num)
+  
 }

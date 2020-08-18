@@ -55,7 +55,7 @@ const api = { // (错误：'​/api/)
   ossFileCreate: '/fileapi/createPath', // 新建用户数据文件目录
   ossFilePath: '/fileapi/paths', // 获取用户目录信息
   ossAuth: '/fileapi/ossauth', // 获取阿里云临时签名信息
-  ossDelFile: '/fileapi/delete_file', // 删除文件
+  ossDelFile: '/fileapi/delete_path', // 删除文件
   ossPathFile: '/fileapi/path_file', // 获取目录下的所有文件，不包含子目录
   // 飞行日志
   delFlyLog: '/flyerapi/delete_fly_log', // 删除飞手日志

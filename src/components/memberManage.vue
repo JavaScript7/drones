@@ -16,7 +16,7 @@
         <ul>
           <li class="clearfix" v-for="(item, index) in e.flyer" :key="item.id">
             <div class="img-item">
-              <img src="/static/img/u195.png" alt="" @mouseleave="showFlyerInfo(i, index)" @mouseover="showFlyerInfo(i, index)">
+              <img src="/static/img/u195.png" alt="" @click="showFlyerInfo(i, index)">
               <div class="operating" v-if="!manager">
                 <span class="iconfont icon-bianji" @click="editFlyerInfo(item)"></span>
                 <span class="iconfont icon-iconfontshanchu5" @click="delMember(item.id)"></span>
@@ -29,10 +29,10 @@
               <li>身份证：{{item.shenfenzheng}}</li>
               <!-- <li>年龄：{{item.age}} @mouseleave="item.show = false"</li> -->
               <li>无人机驾龄：{{item.fly_year}}岁</li>
-              <li>
+              <!-- <li>
                 <span>飞行执照：</span>
                 <img :src="item.licence_img" alt="">
-              </li>
+              </li> -->
             </ul>
           </li>
           <div class="add-team" @click="addFlyerId(e.id)">+</div>
@@ -90,7 +90,7 @@
         <el-form-item label="默认密码" label-width="120px">
           <el-input v-model="pwd" disabled clearable></el-input>
         </el-form-item>
-        <el-form-item label="飞行执照" label-width="120px" v-if="manager">
+        <!-- <el-form-item label="飞行执照" label-width="120px" v-if="manager">
           <el-select v-model="member.subId" prop="subId">
             <el-option
               v-for="e in subAccounts"
@@ -101,7 +101,7 @@
         </el-form-item>
         <el-form-item label="飞行执照" label-width="120px">
           <el-button>上传图片</el-button>
-        </el-form-item>
+        </el-form-item> -->
         <!-- <el-form-item label="图片与视频" label-width="120px" class="upload">
           <el-upload
             action="https://jsonplaceholder.typicode.com/posts/"
@@ -299,14 +299,34 @@ export default {
       })
     } else {
       this.getTeamFlyer()
-      // this.getSubTeams()
-      // this.getFlyer()
     }
     this.$bus.$on('searchCurTeam', id => {
       this.searchCurTeam(id)
     })
   },
-  watch: {},
+  watch: {
+    'member.phone': function(val){
+      if (!val) {
+        this.member.phone = ''
+        return false
+      }
+      this.member.phone = val.match(/\d/ig) ? val.match(/\d/ig).join('') : ''
+    },
+    'member.age': function(val){
+      if (!val) {
+        this.member.age = ''
+        return false
+      }
+      this.member.age = val.match(/\d/ig) ? val.match(/\d/ig).join('') : ''
+    },
+    'member.drivingAge': function(val){
+      if (!val) {
+        this.member.drivingAge = ''
+        return false
+      }
+      this.member.drivingAge = val.match(/\d/ig) ? val.match(/\d/ig).join('') : ''
+    }
+  },
   computed: {
     manager () { // 管理者显示添加账户非管理者隐藏添加账户
       return this.$store.state.userInfo.type === 'manager' ? true : false
@@ -333,7 +353,7 @@ export default {
           this.allFlyers = res.Data.flyers
           this.allTeams = res.Data.teams
           this.teamInfo = res.Data.teams
-          this.teamInfo.forEach(e => {
+          this.allTeams.forEach(e => {
             e.flyer = []
             e.show = false
           })
@@ -344,7 +364,7 @@ export default {
           }
           data.forEach(e => {
             e.show = false
-            this.teamInfo.forEach(item => {
+            this.teamInfos.forEach(item => {
               if (e.belongteam_id === item.id) {
                 item.flyer.push(e)
               }
@@ -390,31 +410,30 @@ export default {
             e.flyer = []
             e.show = false
           })
-          this.teamInfo = this.allTeams
           this.teamInfos = this.allTeams
           this.allFlyers.forEach(e => {
             e.show = false
-            this.teamInfo.forEach(item => {
+            this.teamInfos.forEach(item => {
               if (e.belongteam_id === item.id) {
                 item.flyer.push(e)
               }
             })
           })
+          if (this.$store.state.curSubaccountId) {
+            this.searchCurTeam(this.$store.state.curSubaccountId)
+          } else {
+            this.searchCurTeam(this.subAccounts[0].id)
+          }
         }
       }).catch(err => {})
     },
     searchCurTeam (accountId) { // 罗列当前账户团队
-      if (accountId) {
-        let arr = []
-        this.teamInfos.forEach(e => {
-          if (e.manager_id === accountId) {
-            arr.push(e)
-          }
-        })
-        this.teamInfo = arr
-      } else {
-        this.teamInfo = this.teamInfos
-      }
+      this.teamInfo = []
+      this.teamInfos.forEach(e => {
+        if (e.manager_id === accountId) {
+          this.teamInfo.push(e)
+        }
+      })
     },
     changeTeamName (e) {
       this.changeflag = !this.changeflag
@@ -695,7 +714,7 @@ export default {
           .pernson-info{
             position: absolute;
             top: 50px;
-            left: 60px;
+            left: 78px;
             width: 200px;
             padding: 6px 10px;
             font-size: 14px;

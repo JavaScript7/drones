@@ -25,7 +25,7 @@ const instance = axios.create({
   //   }
   // },
   withCredentials: false,
-  timeout: 1000,
+  timeout: 5000,
   // transformRequest: [function (data) {
   //   return qs.stringify(data)
   // }]
