@@ -177,6 +177,18 @@ li.el-submenu{
 .drone .el-form-item__content .el-textarea{
   width: 218px;
 }
+.view-info .el-form-item__content .el-textarea{
+  width: 202px;
+}
+.view-info .el-textarea__inner{
+  height: 140px;
+}
+.view-info .el-dialog__headerbtn .el-dialog__close{
+  color: #fff;
+}
+.view-info .el-dialog__headerbtn .el-dialog__close:hover{
+  color: #fff;
+}
 .shadow{
   box-shadow: 0 2px 6px 0 rgba(22, 50, 102, .2);
 }

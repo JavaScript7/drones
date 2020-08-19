@@ -5,7 +5,7 @@
       <button @click="isAddTeam = true" v-if="!manager">添加新团队</button>
     </div>
     <div class="team-info">
-      <div class="team-list" v-for="(e, i) in teamInfo" :key="e.id">
+      <div class="team-list" v-for="e in teamInfo" :key="e.id">
         <h4>
           团队名称：
           <span v-show="!e.show">{{e.name}}</span>
@@ -14,26 +14,21 @@
           <span class="iconfont icon-iconfontshanchu5 font20" v-if="!manager" title="删除团队" @click="delTeam(e.id)"></span>
         </h4>
         <ul>
-          <li class="clearfix" v-for="(item, index) in e.flyer" :key="item.id">
+          <li class="clearfix" v-for="item in e.flyer" :key="item.id">
             <div class="img-item">
-              <img src="/static/img/u195.png" alt="" @click="showFlyerInfo(i, index)">
+              <img src="/static/img/u195.png" alt="" @click="viewFlyerInfo(item)">
               <div class="operating" v-if="!manager">
                 <span class="iconfont icon-bianji" @click="editFlyerInfo(item)"></span>
                 <span class="iconfont icon-iconfontshanchu5" @click="delMember(item.id)"></span>
               </div>
             </div>
             <p>{{item.nickname}}</p>
-            <ul class="pernson-info" v-if="item.show">
+            <!-- <ul class="pernson-info" v-if="item.show" @click="showFlyerInfo(i, index)">
               <li>姓名：{{item.nickname}}</li>
               <li>电话：{{item.phone}}</li>
               <li>身份证：{{item.shenfenzheng}}</li>
-              <!-- <li>年龄：{{item.age}} @mouseleave="item.show = false"</li> -->
               <li>无人机驾龄：{{item.fly_year}}岁</li>
-              <!-- <li>
-                <span>飞行执照：</span>
-                <img :src="item.licence_img" alt="">
-              </li> -->
-            </ul>
+            </ul> -->
           </li>
           <div class="add-team" @click="addFlyerId(e.id)">+</div>
         </ul>
@@ -210,6 +205,42 @@
         <el-button type="primary" @click="confirmEditFlyer">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 查看飞手信息 -->
+    <el-dialog
+      class="view-info"
+      title="飞手信息"
+      :visible.sync="isView"
+      :show-close="true"
+      :close-on-click-modal="false"
+      width="790px"
+      center>
+      <el-form :inline="true" ref="ruleFormView" :model="viewFlyer" :label-position="'right'" class="mb40">
+        <el-form-item label="账户：" label-width="120px" prop="regname">
+          <el-input v-model="viewFlyer.regname" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="名称：" label-width="120px" prop="nickname">
+          <el-input v-model="viewFlyer.nickname" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="电话：" label-width="120px" prop="phone">
+          <el-input v-model="viewFlyer.phone" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="身份证：" label-width="120px" prop="shenfenzheng">
+          <el-input v-model="viewFlyer.shenfenzheng" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="年龄：" label-width="120px" prop="year">
+          <el-input v-model="viewFlyer.year" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="无人机驾龄：" label-width="120px" prop="fly_year">
+          <el-input v-model="viewFlyer.fly_year" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="职位：" label-width="120px" prop="position">
+          <el-input v-model="viewFlyer.position" disabled></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isView = false">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -286,7 +317,22 @@ export default {
         license: '',
         subId: '',
         teamId: ''
-      }
+      },
+      isView: false,
+      viewFlyer: {},
+      viewFlyers: {
+        id: '',
+        name: '',
+        phone: '',
+        idCard: '',
+        job: '',
+        age: '',
+        drivingAge: '',
+        regname: '',
+        license: '',
+        subId: '',
+        teamId: ''
+      },
     }
   },
   created () {},
@@ -629,6 +675,10 @@ export default {
       this.$forceUpdate()
       this.teamInfo[i].flyer[index].show = this.teamInfo[i].flyer[index].show ? false : true
       // this.teamInfo[i].flyer[index].show = true
+    },
+    viewFlyerInfo (e) { // 查看飞手信息
+      this.isView = true
+      this.viewFlyer = e
     }
   }
 }
@@ -683,7 +733,7 @@ export default {
         li{
           float: left;
           position: relative;
-          width: 160px;
+          width: 132px;
           margin-right: 20px;
           margin-bottom: 20px;
           .img-item{
@@ -693,8 +743,9 @@ export default {
               cursor: pointer;
             }
             img{
-              width: 100%;
+              width: 132px;
               height: 132px;
+              vertical-align: middle;
               background: #333;
               border-radius: 50%;
             }

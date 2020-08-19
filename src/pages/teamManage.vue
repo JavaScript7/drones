@@ -146,11 +146,12 @@ export default {
     if (this.manager) {
       this.getSubusers()
     }
+    this.$store.commit('CHANGE_SUBACCPUNT', 0) // 别的页面进入团队管理默认选择第一个账户
   },
   watch: {
     '$route': function(newVal) {
       if (newVal.name === 'memberManage' || newVal.name === 'deviceDetail') {
-        // this.curSubaccountIndex = 0
+        // this.$store.commit('CHANGE_SUBACCPUNT', 0)
       }
     }
   },

@@ -7,12 +7,12 @@
       <div class="padding">
         <ul>
           <li v-for="e in droneInfo" :key="e.id" class="drone">
-            <img src="http://www4.djicdn.com/cms/uploads/19b4fb106eee1bbdb80fe51915c9f2a6.png" alt="" @click="e.show = !e.show">
+            <img src="http://www4.djicdn.com/cms/uploads/19b4fb106eee1bbdb80fe51915c9f2a6.png" alt="" @click="viewDevice(e)">
             <div class="del-drone">
               <span class="iconfont icon-iconfontshanchu5" @click="delDrone(e.id)"></span>
             </div>
             <p>{{e.name}}</p>
-            <ul class="info" v-show="e.show">
+            <!-- <ul class="info">
               <li><span>名称：</span>{{e.name}}</li>
               <li><span>型号：</span>{{e.model}}</li>
               <li><span>责任人：</span>{{e.reponsible_people}}</li>
@@ -20,7 +20,7 @@
               <li><span>设备价值：</span>{{e.value}} 元</li>
               <li><span>第三方责任险：</span>{{e.insurance}}</li>
               <li><span>备注：</span>{{e.notes}}</li>
-            </ul>
+            </ul> -->
           </li>
         </ul>
       </div>
@@ -74,6 +74,45 @@
         <el-button type="primary" @click="confirmAdd">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 查看设备信息 -->
+    <el-dialog
+      class="view-info"
+      title="设备信息"
+      :visible.sync="isView"
+      :show-close="true"
+      :close-on-click-modal="false"
+      width="790px"
+      center>
+      <el-form :inline="true" ref="ruleFormView" :model="viewDrone" :label-position="'right'" class="mb40">
+        <el-form-item label="名称：" label-width="120px" prop="name">
+          <el-input v-model="viewDrone.name" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="型号：" label-width="120px" prop="model">
+          <el-input v-model="viewDrone.model" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="序列号：" label-width="120px" prop="djId">
+          <el-input v-model="viewDrone.djId" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="责任人：" label-width="120px" prop="value">
+          <el-input v-model="viewDrone.responsible" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="设备价值：" label-width="120px" prop="value">
+          <el-input v-model="viewDrone.value" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="第三方责任险：" label-width="120px" prop="insurance">
+          <el-input v-model="viewDrone.insurance" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="设备配件：" label-width="120px" prop="fitting">
+          <el-input type="textarea" v-model="viewDrone.fitting" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="备注：" label-width="120px">
+          <el-input type="textarea" v-model="viewDrone.remark" disabled></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isView = false">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -122,7 +161,17 @@ export default {
           {required: true, message: '请输入第三方责任险', trigger: 'blur'}
         ]
       },
-      curSubaccount: false
+      isView: false,
+      viewDrone: {
+        djId: '',
+        name: '',
+        model: '',
+        responsible: '',
+        fitting: '',
+        value: '',
+        insurance: '',
+        remark: ''
+      }
     }
   },
   created () {},
@@ -232,7 +281,7 @@ export default {
         }
       })
     },
-    cancelAddDrone () { // 取消添加无人机
+    cancelAddDrone () { // 取消添加无人机并清空数据
       this.isAddDrone = false
       for (let i in this.drone) {
         this.drone[i] = ''
@@ -258,7 +307,7 @@ export default {
             if (res.Status === 0) {
               this.getDrones()
               this.$message.success('添加无人机成功!')
-              this.isAddDrone = false
+              this.cancelAddDrone()
             } else {
               this.$message.error(res.Msg)
             }
@@ -282,6 +331,17 @@ export default {
           this.$message.error(res.Msg)
         }
       })
+    },
+    viewDevice (e) { // 查看无人机信息
+      this.isView = true
+      this.viewDrone.djId = e.dj_id
+      this.viewDrone.name = e.name
+      this.viewDrone.model = e.model
+      this.viewDrone.responsible = e.reponsible_people
+      this.viewDrone.fitting = e.parts
+      this.viewDrone.value = e.value
+      this.viewDrone.insurance = e.insurance
+      this.viewDrone.remark = e.notes
     }
   }
 }
@@ -310,7 +370,7 @@ export default {
       margin: 15px;
       background: #EA7382;
       ul{
-        padding-top: 40px;
+        padding-top: 20px;
         .drone{
           position: relative;
           float: left;
